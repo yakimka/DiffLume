@@ -1,13 +1,13 @@
-VerticalScroll {
+PanelView {
     width: 1fr;
     border: solid darkred;
 }
 
-VerticalScroll:focus {
+PanelView:focus {
     border: solid $accent;
 }
 
-VerticalScroll.fullscreen {
+PanelView.fullscreen {
     border: none;
 }
 

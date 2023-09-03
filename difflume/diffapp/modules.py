@@ -22,7 +22,9 @@ class Content:
 def parse_content(text: str) -> Content:
     text_type = TextType.PLAIN
     with contextlib.suppress(json.JSONDecodeError):
-        text = json.dumps(json.loads(text), indent=2, sort_keys=True, ensure_ascii=False)
+        text = json.dumps(
+            json.loads(text), indent=2, sort_keys=True, ensure_ascii=False
+        )
         text_type = TextType.JSON
     return Content(text=text, text_type=text_type)
 
