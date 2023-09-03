@@ -14,7 +14,7 @@ on:
 
 env:
   DOCKER_USERNAME: "yakim"
-  PROJECT_NAME: "DiffLume"
+  PROJECT_NAME: "difflume"
   DOCKER_COMPOSE_SERVICE_NAME: "app"
   MAIN_PY_VERSION: "3.11"
   PIP_NO_CACHE_DIR: "off"
