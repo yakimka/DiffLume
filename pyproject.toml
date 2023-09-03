@@ -36,7 +36,7 @@ classifiers = [
 python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-hypothesis = "^6.82.6"
+hypothesis = "^6.83.0"
 mypy = "^1.5"
 pre-commit = "^3.3.3"
 pytest = "^7.1"
