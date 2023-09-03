@@ -38,7 +38,7 @@ python = "^3.10"
 [tool.poetry.dev-dependencies]
 hypothesis = "^6.83.0"
 mypy = "^1.5"
-pre-commit = "^3.3.3"
+pre-commit = "^3.4.0"
 pytest = "^7.4"
 pytest-asyncio = "^0.21.1"
 pytest-cov = "^4.1.0"
