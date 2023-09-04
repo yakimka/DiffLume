@@ -10,8 +10,7 @@ TUI app for viewing deltas between text files
 
 ## Features
 
-- Add yours!
-
+- Three-panel TUI for viewing deltas between text files
 
 ## Installation
 
@@ -19,16 +18,12 @@ TUI app for viewing deltas between text files
 pip install DiffLume
 ```
 
+## Usage
 
-## Example
-
-Showcase how your project can be used:
-
-```python
-from difflume.example import some_function
-
-print(some_function(3, 4))
-# => 7
+```bash
+difflume
+# or
+python -m difflume
 ```
 
 ## License
