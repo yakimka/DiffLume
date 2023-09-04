@@ -1,7 +1,22 @@
+from dataclasses import dataclass
+
+from httpx import AsyncClient
 from textual.app import App
 from textual.binding import Binding
 
 from difflume.tui.screens import DiffScreen, ErrorScreen, HelpScreen
+
+
+@dataclass
+class Deps:
+    http_client: AsyncClient
+
+    @classmethod
+    def create(cls) -> "Deps":
+        return cls(http_client=AsyncClient(follow_redirects=True, verify=False))
+
+    async def close(self) -> None:
+        await self.http_client.aclose()
 
 
 class DiffLume(App[None]):
@@ -14,10 +29,16 @@ class DiffLume(App[None]):
         "help": HelpScreen,
     }
 
+    deps: Deps
+
     def __init__(self, *args, left_module, right_module, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.left_module = left_module
         self.right_module = right_module
 
     async def on_mount(self) -> None:
+        self.deps = Deps.create()
         await self.push_screen(DiffScreen())
+
+    async def on_unmount(self) -> None:
+        await self.deps.close()

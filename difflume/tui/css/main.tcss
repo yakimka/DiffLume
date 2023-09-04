@@ -34,10 +34,35 @@ Modal {
     align: center middle;
 }
 
-#select-file-modal {
-    margin: 0 1;
-    width: 30%;
+#open-file-dialog {
+    padding: 2 4;
+    width: 40%;
     height: 50%;
     border: solid darkred;
     background: $surface;
+}
+
+#select-file-dialog {
+    padding: 2 4;
+    width: 40%;
+    height: 50%;
+    border: solid darkred;
+    background: $surface;
+}
+
+#select-url-dialog {
+    padding: 2 4;
+    width: 50%;
+    border: solid darkred;
+    background: $surface;
+}
+
+#open-file-dialog Button {
+    width: 100%;
+}
+
+#open-file-dialog-label {
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
 }

@@ -54,9 +54,13 @@ class Module(ABC):
         From: `http://localhost:5984/_utils/document.html?collection/my_id`
         To: `http://localhost:5984/collection/my_id`
         """
+        return None
 
     async def load(self) -> None:
         await asyncio.sleep(3)
+        if self.ready():
+            return
+        self.rewrite_inputs()
         self.content = await self.read_content()
         self.revisions = await self.retrieve_revisions()
 

@@ -7,10 +7,10 @@ from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Static, Markdown
+from textual.widgets import Footer, Header, Markdown, Static
 
 from difflume.diffapp.modules import Module
-from difflume.tui.modals import SelectFileModal
+from difflume.tui import modals
 from difflume.tui.widgets import DiffWidget, ModuleWidget, PanelView
 
 if TYPE_CHECKING:
@@ -27,7 +27,9 @@ class ErrorScreen(Screen):
 
 class HelpScreen(Screen):
     MD_PATH = Path(__file__).parent / "help.md"
-    BINDINGS = [Binding("escape,space,q,question_mark", "pop_screen", "Close", show=True)]
+    BINDINGS = [
+        Binding("escape,space,q,question_mark", "pop_screen", "Close", show=True)
+    ]
 
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Markdown(self.MD_PATH.read_text())
@@ -40,7 +42,12 @@ class DiffScreen(Screen):
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
-        Binding("c", "toggle_class('PanelContent', 'centered-top')", "Center text", show=True),
+        Binding(
+            "c",
+            "toggle_class('PanelContent', 'centered-top')",
+            "Center text",
+            show=True,
+        ),
         Binding("f1", "select_file('left')", "Select Left File", show=True),
         Binding("f3", "select_file('right')", "Select Right File", show=True),
     ]
@@ -59,9 +66,14 @@ class DiffScreen(Screen):
         await self.app.action_toggle_class("PanelView:focus", "fullscreen")
 
     async def action_select_file(self, panel: Literal["left", "right"]) -> None:
-        def callback(module: Module) -> None:
+        def select_module_callback(module: Module) -> None:
             self.run_worker(self.load_panels(module, panel=panel), exclusive=True)
-        await self.app.push_screen(SelectFileModal(), callback)
+
+        def callback(modal_type: str) -> None:
+            klass = getattr(modals, modal_type)
+            self.app.push_screen(klass(), select_module_callback)
+
+        await self.app.push_screen(modals.OpenFileModal(), callback)
 
     async def load_panels(self, module, *, panel: Literal["left", "right"]) -> None:
         setattr(self.app, f"{panel}_module", module)
