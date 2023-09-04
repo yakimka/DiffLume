@@ -8,11 +8,6 @@ description = "TUI app for viewing deltas between text files"
 version = "0.1.0"
 license = "MIT"
 
-#packages = [
-#    { include = "difflume" },
-#]
-#include = ["README.md"]
-
 authors = [
   "yakimka"
 ]
@@ -31,6 +26,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
 ]
+
+[tool.poetry.scripts]
+difflume = "difflume.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
