@@ -115,7 +115,7 @@ jobs:
         run: |
           docker pull ${DEV_IMAGE}
           docker tag ${DEV_IMAGE} ${PROJECT_NAME}:dev
-          docker compose run --user=$(id -u) --rm -d devtools sleep infinity
+          docker compose run --rm -d devtools sleep infinity
 
       - run: echo "PROJECT_VERSION=$(docker compose exec devtools poetry version --short)" >> $GITHUB_ENV
 
@@ -172,7 +172,7 @@ jobs:
         run: |
           docker pull ${DEV_IMAGE}
           docker tag ${DEV_IMAGE} ${PROJECT_NAME}:dev
-          docker compose run --user=$(id -u) --rm -d devtools sleep infinity
+          docker compose run --rm -d devtools sleep infinity
 
       - run: echo "PROJECT_VERSION=$(docker compose exec devtools poetry version --short)" >> $GITHUB_ENV
 
