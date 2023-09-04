@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import json
 from dataclasses import dataclass
@@ -36,6 +37,9 @@ class FSModule:
         self.revisions: list[str] = []
         self.revisions_content: dict[str, Content] = {}
 
+    def ready(self) -> bool:
+        return self.content is not None
+
     def rewrite_inputs(self) -> None:
         """
         Modify the inputs as necessary. This is beneficial when some inputs aren't
@@ -50,6 +54,7 @@ class FSModule:
         """
 
     async def read(self) -> None:
+        await asyncio.sleep(3)
         self.content = await self.read_content()
         self.revisions = await self.retrieve_revisions()
 

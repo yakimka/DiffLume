@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 from rich.console import RenderableType
 from rich.highlighter import Highlighter, JSONHighlighter, ReprHighlighter
 from rich.style import Style
@@ -11,9 +13,7 @@ from difflume.diffapp.modules import FSModule, TextType
 
 
 class PanelView(VerticalScroll):
-    BINDINGS = [
-        Binding("d", "toggle_class('Static', 'centered2')", "Center2 text", show=True),
-    ]
+    pass
 
 
 def get_highlighter(text_type: TextType) -> Highlighter:
@@ -25,6 +25,12 @@ def get_highlighter(text_type: TextType) -> Highlighter:
 class PanelContent(Widget, inherit_bindings=False):
     DEFAULT_CLASSES = "panel-content"
 
+    def _set_waiting_style(self) -> None:
+        self.add_class("centered-middle")
+
+    def _remove_waiting_style(self) -> None:
+        self.remove_class("centered-middle")
+
 
 class ModuleWidget(PanelContent):
     DEFAULT_CSS = """
@@ -32,10 +38,6 @@ class ModuleWidget(PanelContent):
         height: auto;
     }
     """
-
-    BINDINGS = [
-        Binding("r", "toggle_class('Static', 'centered4')", "Center4 text", show=True),
-    ]
 
     _module: FSModule | None
 
@@ -60,11 +62,18 @@ class ModuleWidget(PanelContent):
         self._module = module
 
     def render(self) -> RenderableType:
+        if not self.module:
+            self._set_waiting_style()
+            return Text("Empty")
+        if not self.module.ready():
+            self._set_waiting_style()
+            return Text("Loading...")
         left_highlighter = get_highlighter(self.module.content.text_type)
         left_text = self.module.content.text
+        self._remove_waiting_style()
         return left_highlighter(Text(left_text))
 
-    def update(self, module: FSModule) -> None:
+    def update(self, module: FSModule | None) -> None:
         self.module = module
         self.refresh(layout=True)
 
@@ -117,6 +126,13 @@ class DiffWidget(PanelContent):
         self._right_module = right_module
 
     def render(self) -> RenderableType:
+        if not self.left_module or not self.right_module:
+            self._set_waiting_style()
+            return Text("")
+        if not self.left_module.ready() or not self.right_module.ready():
+            self._set_waiting_style()
+            return Text("Loading...")
+
         diff_result = create_diff(
             self.left_module.content.text,
             self.right_module.content.text,
@@ -127,6 +143,7 @@ class DiffWidget(PanelContent):
             diff_highlighted.highlight_regex(
                 regexp, Style(bgcolor=DIFF_COLORS[highlight_type])
             )
+        self._remove_waiting_style()
         return diff_highlighted
 
     def update(self, left_module: FSModule, right_module: FSModule) -> None:

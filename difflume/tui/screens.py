@@ -41,7 +41,7 @@ class DiffScreen(Screen):
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
-        Binding("c", "toggle_class('.panel-content', 'centered')", "Center text", show=True),
+        Binding("c", "toggle_class('.panel-content', 'centered-top')", "Center text", show=True),
         Binding("f1", "select_file('left')", "Select Left File", show=True),
         Binding("f3", "select_file('right')", "Select Right File", show=True),
     ]
@@ -60,16 +60,24 @@ class DiffScreen(Screen):
         await self.app.action_toggle_class("PanelView:focus", "fullscreen")
 
     async def action_select_file(self, panel: Literal["left", "right"]) -> None:
-        async def select_file(path: str) -> None:
-            new_module = FSModule(path)
-            await new_module.read()
-            setattr(self.app, f"{panel}_module", new_module)
-            self.query_one(f"#{panel}-text", ModuleWidget).update(new_module)
-            self.query_one("#diff-text", DiffWidget).update(
-                self.left_module, self.right_module
-            )
+        def callback(module: FSModule) -> None:
+            self.run_worker(self.load_panels(module, panel=panel), exclusive=True)
+        await self.app.push_screen(SelectFileModal(), callback)
 
-        await self.app.push_screen(SelectFileModal(), select_file)
+    async def load_panels(self, module, *, panel: Literal["left", "right"]) -> None:
+        setattr(self.app, f"{panel}_module", module)
+        module_widget = self.query_one(f"#{panel}-text", ModuleWidget)
+        diff_widget = self.query_one("#diff-text", DiffWidget)
+        # resetting content
+        module_widget.update(module)
+        diff_widget.update(self.left_module, self.right_module)
+        await module.read()
+        module_widget.update(module)
+        diff_widget.update(self.left_module, self.right_module)
+
+    async def on_mount(self) -> None:
+        self.run_worker(self.load_panels(self.left_module, panel="left"))
+        self.run_worker(self.load_panels(self.right_module, panel="right"))
 
     def get_widgets(self) -> tuple[Widget, Widget, Widget]:
         left_widget = ModuleWidget(self.left_module, id="left-text")

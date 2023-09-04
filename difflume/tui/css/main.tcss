@@ -15,8 +15,13 @@ PanelView.fullscreen {
     display: none;
 }
 
-.centered {
+.centered-top {
     content-align: center top;
+}
+
+.centered-middle {
+    height: 100%;
+    content-align: center middle;
 }
 
 ErrorScreen Static {

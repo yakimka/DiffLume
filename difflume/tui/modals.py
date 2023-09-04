@@ -8,6 +8,8 @@ from textual.binding import Binding
 from textual.screen import ModalScreen
 from textual.widgets import DirectoryTree, Footer
 
+from difflume.diffapp.modules import FSModule
+
 
 class Modal(ModalScreen):
     BINDINGS = [Binding("escape,q", "pop_screen", "Close", show=True)]
@@ -23,7 +25,8 @@ class SelectFileModal(Modal):
         yield DirectoryTree(os.getcwd(), id="select-file-modal")
         yield Footer()
 
-    def on_directory_tree_file_selected(
+    async def on_directory_tree_file_selected(
         self, event: DirectoryTree.FileSelected
     ) -> None:
-        self.dismiss(event.path)
+        new_module = FSModule(str(event.path))
+        self.dismiss(new_module)
