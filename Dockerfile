@@ -34,4 +34,4 @@ ENV PATH="/venv/bin:$PATH"
 WORKDIR /opt/app
 COPY --from=builder /venv /venv
 
-CMD ["python"]
+CMD ["difflume"]

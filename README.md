@@ -12,18 +12,26 @@ TUI app for viewing deltas between text files
 
 - Three-panel TUI for viewing deltas between text files
 
-## Installation
+## Usage
+
+Install via pip:
 
 ```bash
 pip install DiffLume
 ```
 
-## Usage
+Then type in your terminal:
 
 ```bash
 difflume
 # or
 python -m difflume
+```
+
+Or you can run it in Docker:
+
+```bash
+docker run -it --rm yakim/difflume
 ```
 
 ## License
