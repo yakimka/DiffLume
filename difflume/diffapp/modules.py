@@ -136,14 +136,27 @@ class URLModule(NoRevisionModule):
 
 class CouchDBModule(URLModule):
     def rewrite_inputs(self) -> None:
+        """
+        Parse Fauxton admin URLs and rewrite them for retrieving JSON.
+
+        Examples:
+        From: `http://localhost:5984/_utils/document.html?collection/my_id`
+        To: `http://localhost:5984/collection/my_id`
+        ---
+        From: `http://localhost:5984/_utils/document.html?collection/my_id@7-abc`
+        To: `http://localhost:5984/collection/my_id?rev=7-abc`
+        ---
+        From: `http://localhost:5984/_utils/#database/collection/my_id`
+        To: `http://localhost:5984/collection/my_id`
+        """
         parts = url.parse(self._url)
-        # Fauxton ver 1
+        # ver 1.x (Futon)
         if parts.path.startswith("/_utils/document.html"):
             path, *rev = parts.query.split("@")
             parts.path = path
             parts.query = f"rev={rev[0]}" if rev else ""
             self._url = url.build(parts)
-        # ver 2
+        # ver 2.x-3.x (Fauxton)
         elif parts.path == "/_utils/" and parts.fragment.startswith("database/"):
             parts.path = parts.fragment.removeprefix("database/")
             parts.fragment = ""
