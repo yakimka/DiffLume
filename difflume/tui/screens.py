@@ -42,6 +42,8 @@ class DiffScreen(Screen):
     CSS_PATH = os.path.join("css", "main.tcss")
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
+        Binding("f1", "select_file('left')", "Open Left", show=True),
+        Binding("f3", "select_file('right')", "Open Right", show=True),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
         Binding(
             "c",
@@ -49,8 +51,6 @@ class DiffScreen(Screen):
             "Center text",
             show=True,
         ),
-        Binding("f1", "select_file('left')", "Select Left File", show=True),
-        Binding("f3", "select_file('right')", "Select Right File", show=True),
     ]
 
     async def action_toggle_full_screen(self) -> None:
