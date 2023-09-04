@@ -7,7 +7,6 @@ from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
-from textual.widget import Widget
 from textual.widgets import Footer, Header, Static, Markdown
 
 from difflume.diffapp.modules import FSModule
@@ -41,7 +40,7 @@ class DiffScreen(Screen):
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
-        Binding("c", "toggle_class('.panel-content', 'centered-top')", "Center text", show=True),
+        Binding("c", "toggle_class('PanelContent', 'centered-top')", "Center text", show=True),
         Binding("f1", "select_file('left')", "Select Left File", show=True),
         Binding("f3", "select_file('right')", "Select Right File", show=True),
     ]
@@ -79,21 +78,13 @@ class DiffScreen(Screen):
         self.run_worker(self.load_panels(self.left_module, panel="left"))
         self.run_worker(self.load_panels(self.right_module, panel="right"))
 
-    def get_widgets(self) -> tuple[Widget, Widget, Widget]:
-        left_widget = ModuleWidget(self.left_module, id="left-text")
-        diff_widget = DiffWidget(self.left_module, self.right_module, id="diff-text")
-        right_widget = ModuleWidget(self.right_module, id="right-text")
-
-        return left_widget, diff_widget, right_widget
-
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Header()
-        left, middle, right = self.get_widgets()
         with Horizontal():
             with PanelView():
-                yield left
+                yield ModuleWidget(self.left_module, id="left-text")
             with PanelView():
-                yield middle
+                yield DiffWidget(self.left_module, self.right_module, id="diff-text")
             with PanelView():
-                yield right
+                yield ModuleWidget(self.right_module, id="right-text")
         yield Footer()

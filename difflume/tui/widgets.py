@@ -1,10 +1,7 @@
-from contextlib import contextmanager
-
 from rich.console import RenderableType
 from rich.highlighter import Highlighter, JSONHighlighter, ReprHighlighter
 from rich.style import Style
 from rich.text import Text
-from textual.binding import Binding
 from textual.containers import VerticalScroll
 from textual.widget import Widget
 
@@ -23,7 +20,11 @@ def get_highlighter(text_type: TextType) -> Highlighter:
 
 
 class PanelContent(Widget, inherit_bindings=False):
-    DEFAULT_CLASSES = "panel-content"
+    DEFAULT_CSS = """
+    PanelContent {
+        height: auto;
+    }
+    """
 
     def _set_waiting_style(self) -> None:
         self.add_class("centered-middle")
@@ -33,12 +34,6 @@ class PanelContent(Widget, inherit_bindings=False):
 
 
 class ModuleWidget(PanelContent):
-    DEFAULT_CSS = """
-    ModuleWidget {
-        height: auto;
-    }
-    """
-
     _module: FSModule | None
 
     def __init__(
@@ -86,12 +81,6 @@ DIFF_COLORS = {
 
 
 class DiffWidget(PanelContent):
-    DEFAULT_CSS = """
-    DiffWidget {
-        height: auto;
-    }
-    """
-
     _left_module: FSModule | None
     _right_module: FSModule | None
 
