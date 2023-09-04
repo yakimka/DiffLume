@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Literal
 
 from textual.app import ComposeResult
@@ -7,7 +8,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
 from textual.widget import Widget
-from textual.widgets import Footer, Header, Static
+from textual.widgets import Footer, Header, Static, Markdown
 
 from difflume.diffapp.modules import FSModule
 from difflume.tui.modals import SelectFileModal
@@ -25,10 +26,20 @@ class ErrorScreen(Screen):
         yield Footer()
 
 
+class HelpScreen(Screen):
+    MD_PATH = Path(__file__).parent / "help.md"
+    BINDINGS = [Binding("escape,space,q,question_mark", "pop_screen", "Close", show=True)]
+
+    def compose(self) -> Generator[ComposeResult, None, None]:
+        yield Markdown(self.MD_PATH.read_text())
+        yield Footer()
+
+
 class DiffScreen(Screen):
     app: DiffLume
     CSS_PATH = "css/main.tcss"
     BINDINGS = [
+        Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
         Binding("c", "toggle_class('.panel-content', 'centered')", "Center text", show=True),
         Binding("f1", "select_file('left')", "Select Left File", show=True),

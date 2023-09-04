@@ -1,7 +1,7 @@
 from textual.app import App
 from textual.binding import Binding
 
-from difflume.tui.screens import DiffScreen, ErrorScreen
+from difflume.tui.screens import DiffScreen, ErrorScreen, HelpScreen
 
 
 class DiffLume(App[None]):
@@ -11,6 +11,7 @@ class DiffLume(App[None]):
 
     SCREENS = {
         "error_screen": ErrorScreen,
+        "help": HelpScreen,
     }
 
     def __init__(self, *args, left_module, right_module, **kwargs) -> None:
