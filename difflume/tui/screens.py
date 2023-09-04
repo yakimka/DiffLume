@@ -3,17 +3,18 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Literal
 
-from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Markdown, Static
 
-from difflume.diffapp.modules import Module
 from difflume.tui import modals
 from difflume.tui.widgets import DiffWidget, ModuleWidget, PanelView
 
 if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+    from difflume.diffapp.modules import Module
     from difflume.tui.app import DiffLume
 
 
@@ -52,14 +53,6 @@ class DiffScreen(Screen):
         Binding("f3", "select_file('right')", "Select Right File", show=True),
     ]
 
-    @property
-    def left_module(self) -> Module:
-        return self.app.left_module
-
-    @property
-    def right_module(self) -> Module:
-        return self.app.right_module
-
     async def action_toggle_full_screen(self) -> None:
         await self.app.action_toggle_class("PanelView", "disabled")
         await self.app.action_remove_class("PanelView:focus", "disabled")
@@ -76,29 +69,26 @@ class DiffScreen(Screen):
         await self.app.push_screen(modals.OpenFileModal(), callback)
 
     async def load_panels(self, module, *, panel: Literal["left", "right"]) -> None:
-        setattr(self.app, f"{panel}_module", module)
         module_widget = self.query_one(f"#{panel}-text", ModuleWidget)
-        diff_widget = self.query_one("#diff-text", DiffWidget)
+        diff_widget_update = getattr(
+            self.query_one("#diff-text", DiffWidget), f"update_{panel}"
+        )
+
         # resetting content
         module_widget.update(module)
-        diff_widget.update(self.left_module, self.right_module)
+        diff_widget_update(module)
+
         await module.load()
         module_widget.update(module)
-        diff_widget.update(self.left_module, self.right_module)
-
-    async def on_mount(self) -> None:
-        if self.left_module:
-            self.run_worker(self.load_panels(self.left_module, panel="left"))
-        if self.right_module:
-            self.run_worker(self.load_panels(self.right_module, panel="right"))
+        diff_widget_update(module)
 
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Header()
         with Horizontal():
             with PanelView():
-                yield ModuleWidget(self.left_module, id="left-text")
+                yield ModuleWidget(None, id="left-text")
             with PanelView():
-                yield DiffWidget(self.left_module, self.right_module, id="diff-text")
+                yield DiffWidget(None, None, id="diff-text")
             with PanelView():
-                yield ModuleWidget(self.right_module, id="right-text")
+                yield ModuleWidget(None, id="right-text")
         yield Footer()

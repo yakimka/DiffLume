@@ -1,4 +1,7 @@
-from rich.console import RenderableType
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from rich.highlighter import Highlighter, JSONHighlighter, ReprHighlighter
 from rich.style import Style
 from rich.text import Text
@@ -7,6 +10,9 @@ from textual.widget import Widget
 
 from difflume.diffapp.differ import DiffType, HighlightType, create_diff
 from difflume.diffapp.modules import Module, TextType
+
+if TYPE_CHECKING:
+    from rich.console import RenderableType
 
 
 class PanelView(VerticalScroll):
@@ -135,7 +141,15 @@ class DiffWidget(PanelContent):
         self._remove_waiting_style()
         return diff_highlighted
 
-    def update(self, left_module: Module, right_module: Module) -> None:
+    def update(self, left_module: Module | None, right_module: Module | None) -> None:
         self.left_module = left_module
+        self.right_module = right_module
+        self.refresh(layout=True)
+
+    def update_left(self, left_module: Module | None) -> None:
+        self.left_module = left_module
+        self.refresh(layout=True)
+
+    def update_right(self, right_module: Module | None) -> None:
         self.right_module = right_module
         self.refresh(layout=True)

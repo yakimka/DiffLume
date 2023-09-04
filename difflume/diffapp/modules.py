@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import asyncio
 import contextlib
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from typing import TYPE_CHECKING
 
-from httpx import AsyncClient
+if TYPE_CHECKING:
+    from httpx import AsyncClient
 
 
 class RevisionNotFoundError(Exception):
@@ -93,7 +97,7 @@ class NoRevisionModule(Module, ABC):
     async def retrieve_revisions(self) -> list[str]:
         return []
 
-    async def read_revision(self, revision: str) -> Content:
+    async def read_revision(self, revision: str) -> Content:  # noqa: U100
         raise RevisionNotFoundError
 
 

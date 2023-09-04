@@ -13,7 +13,9 @@ class Deps:
 
     @classmethod
     def create(cls) -> "Deps":
-        return cls(http_client=AsyncClient(follow_redirects=True, verify=False))
+        return cls(
+            http_client=AsyncClient(follow_redirects=True, verify=False)  # noqa: S501
+        )
 
     async def close(self) -> None:
         await self.http_client.aclose()
@@ -30,11 +32,6 @@ class DiffLume(App[None]):
     }
 
     deps: Deps
-
-    def __init__(self, *args, left_module, right_module, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.left_module = left_module
-        self.right_module = right_module
 
     async def on_mount(self) -> None:
         self.deps = Deps.create()

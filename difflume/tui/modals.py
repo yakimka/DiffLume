@@ -3,8 +3,6 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Generator
 
-from textual import events
-from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Center, ScrollableContainer
 from textual.screen import ModalScreen
@@ -14,6 +12,9 @@ from textual.widgets import Button, DirectoryTree, Footer, Input, Label
 from difflume.diffapp.modules import FSModule, URLModule
 
 if TYPE_CHECKING:
+    from textual import events
+    from textual.app import ComposeResult
+
     from difflume.tui.app import DiffLume
 
 
