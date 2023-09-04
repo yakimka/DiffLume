@@ -23,9 +23,9 @@ class Ndiff:
 
     def highlight_regexp(self) -> dict[HighlightType, str]:
         return {
-            HighlightType.ADDED: r"\n\+.*",
-            HighlightType.REMOVED: r"\n-.*",
-            HighlightType.EXPLANATION: r"\n\?.*",
+            HighlightType.ADDED: r"(^|\n)\+.*",
+            HighlightType.REMOVED: r"(^|\n)-.*",
+            HighlightType.EXPLANATION: r"(^|\n)\?.*",
         }
 
 
