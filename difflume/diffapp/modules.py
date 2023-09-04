@@ -56,7 +56,7 @@ class Module(ABC):
         self._content = content
 
     def ready(self) -> bool:
-        return self.content is not None
+        return self._content is not None
 
     def rewrite_inputs(self) -> None:
         """
