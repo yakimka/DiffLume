@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import json
 from abc import ABC, abstractmethod
@@ -73,7 +72,6 @@ class Module(ABC):
         return None
 
     async def load(self) -> None:
-        await asyncio.sleep(3)
         if self.ready():
             return
         self.rewrite_inputs()
