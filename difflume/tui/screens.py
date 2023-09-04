@@ -9,7 +9,7 @@ from textual.containers import Horizontal
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static, Markdown
 
-from difflume.diffapp.modules import FSModule
+from difflume.diffapp.modules import Module
 from difflume.tui.modals import SelectFileModal
 from difflume.tui.widgets import DiffWidget, ModuleWidget, PanelView
 
@@ -46,11 +46,11 @@ class DiffScreen(Screen):
     ]
 
     @property
-    def left_module(self) -> FSModule:
+    def left_module(self) -> Module:
         return self.app.left_module
 
     @property
-    def right_module(self) -> FSModule:
+    def right_module(self) -> Module:
         return self.app.right_module
 
     async def action_toggle_full_screen(self) -> None:
@@ -59,7 +59,7 @@ class DiffScreen(Screen):
         await self.app.action_toggle_class("PanelView:focus", "fullscreen")
 
     async def action_select_file(self, panel: Literal["left", "right"]) -> None:
-        def callback(module: FSModule) -> None:
+        def callback(module: Module) -> None:
             self.run_worker(self.load_panels(module, panel=panel), exclusive=True)
         await self.app.push_screen(SelectFileModal(), callback)
 
@@ -70,13 +70,15 @@ class DiffScreen(Screen):
         # resetting content
         module_widget.update(module)
         diff_widget.update(self.left_module, self.right_module)
-        await module.read()
+        await module.load()
         module_widget.update(module)
         diff_widget.update(self.left_module, self.right_module)
 
     async def on_mount(self) -> None:
-        self.run_worker(self.load_panels(self.left_module, panel="left"))
-        self.run_worker(self.load_panels(self.right_module, panel="right"))
+        if self.left_module:
+            self.run_worker(self.load_panels(self.left_module, panel="left"))
+        if self.right_module:
+            self.run_worker(self.load_panels(self.right_module, panel="right"))
 
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Header()

@@ -16,11 +16,6 @@ class Modal(ModalScreen):
 
 
 class SelectFileModal(Modal):
-    BINDINGS = [
-        Binding("escape,q", "pop_screen", "Close", show=True),
-        Binding("e", "select_file_and_close", "Select", show=True),
-    ]
-
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield DirectoryTree(os.getcwd(), id="select-file-modal")
         yield Footer()

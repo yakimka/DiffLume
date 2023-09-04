@@ -1,8 +1,11 @@
 import asyncio
 import contextlib
 import json
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+
+from httpx import AsyncClient
 
 
 class RevisionNotFoundError(Exception):
@@ -30,9 +33,8 @@ def parse_content(text: str) -> Content:
     return Content(text=text, text_type=text_type)
 
 
-class FSModule:
-    def __init__(self, path: str) -> None:
-        self._path = path
+class Module(ABC):
+    def __init__(self) -> None:
         self.content: Content | None = None
         self.revisions: list[str] = []
         self.revisions_content: dict[str, Content] = {}
@@ -53,32 +55,60 @@ class FSModule:
         To: `http://localhost:5984/collection/my_id`
         """
 
-    async def read(self) -> None:
+    async def load(self) -> None:
         await asyncio.sleep(3)
         self.content = await self.read_content()
         self.revisions = await self.retrieve_revisions()
 
     async def read_content(self) -> Content:
         """
-        Read the file and return its contents.
+        Read the file and return its parsed content.
         """
         return parse_content(await self._read_text())
 
+    @abstractmethod
     async def _read_text(self) -> str:
         """
         Read the file and return its contents (text).
         """
-        with open(self._path, "r") as f:
-            return f.read()
 
+    @abstractmethod
     async def retrieve_revisions(self) -> list[str]:
         """
         Retrieve the revision numbers for the file.
         """
-        return []
 
+    @abstractmethod
     async def read_revision(self, revision: str) -> Content:
         """
         Read the file at the given revision and return its contents.
         """
+
+
+class NoRevisionModule(Module, ABC):
+    async def retrieve_revisions(self) -> list[str]:
+        return []
+
+    async def read_revision(self, revision: str) -> Content:
         raise RevisionNotFoundError
+
+
+class FSModule(NoRevisionModule):
+    def __init__(self, path: str) -> None:
+        super().__init__()
+        self._path = path
+
+    async def _read_text(self) -> str:
+        with open(self._path, "r") as f:
+            return f.read()
+
+
+class URLModule(NoRevisionModule):
+    def __init__(self, url: str, *, client: AsyncClient) -> None:
+        super().__init__()
+        self._url = url
+        self._client = client
+
+    async def _read_text(self) -> str:
+        res = await self._client.get(self._url, timeout=15)
+        return res.text

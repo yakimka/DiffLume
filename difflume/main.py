@@ -9,8 +9,8 @@ async def main() -> None:
     right_module = FSModule("data/me-current.json")
 
     app = DiffLume(
-        left_module=left_module,
-        right_module=right_module,
+        left_module=None,
+        right_module=None,
     )
     await app.run_async()
 

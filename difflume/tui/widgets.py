@@ -6,7 +6,7 @@ from textual.containers import VerticalScroll
 from textual.widget import Widget
 
 from difflume.diffapp.differ import DiffType, HighlightType, create_diff
-from difflume.diffapp.modules import FSModule, TextType
+from difflume.diffapp.modules import Module, TextType
 
 
 class PanelView(VerticalScroll):
@@ -34,11 +34,11 @@ class PanelContent(Widget, inherit_bindings=False):
 
 
 class ModuleWidget(PanelContent):
-    _module: FSModule | None
+    _module: Module | None
 
     def __init__(
         self,
-        module: FSModule | None = None,
+        module: Module | None = None,
         *,
         name: str | None = None,
         id: str | None = None,
@@ -49,11 +49,11 @@ class ModuleWidget(PanelContent):
         self.module = module
 
     @property
-    def module(self) -> FSModule:
+    def module(self) -> Module:
         return self._module or None
 
     @module.setter
-    def module(self, module: FSModule) -> None:
+    def module(self, module: Module) -> None:
         self._module = module
 
     def render(self) -> RenderableType:
@@ -68,7 +68,7 @@ class ModuleWidget(PanelContent):
         self._remove_waiting_style()
         return left_highlighter(Text(left_text))
 
-    def update(self, module: FSModule | None) -> None:
+    def update(self, module: Module | None) -> None:
         self.module = module
         self.refresh(layout=True)
 
@@ -81,13 +81,13 @@ DIFF_COLORS = {
 
 
 class DiffWidget(PanelContent):
-    _left_module: FSModule | None
-    _right_module: FSModule | None
+    _left_module: Module | None
+    _right_module: Module | None
 
     def __init__(
         self,
-        left_module: FSModule | None = None,
-        right_module: FSModule | None = None,
+        left_module: Module | None = None,
+        right_module: Module | None = None,
         *,
         name: str | None = None,
         id: str | None = None,
@@ -99,19 +99,19 @@ class DiffWidget(PanelContent):
         self.right_module = right_module
 
     @property
-    def left_module(self) -> FSModule:
+    def left_module(self) -> Module:
         return self._left_module or None
 
     @left_module.setter
-    def left_module(self, left_module: FSModule) -> None:
+    def left_module(self, left_module: Module) -> None:
         self._left_module = left_module
 
     @property
-    def right_module(self) -> FSModule:
+    def right_module(self) -> Module:
         return self._right_module or None
 
     @right_module.setter
-    def right_module(self, right_module: FSModule) -> None:
+    def right_module(self, right_module: Module) -> None:
         self._right_module = right_module
 
     def render(self) -> RenderableType:
@@ -135,7 +135,7 @@ class DiffWidget(PanelContent):
         self._remove_waiting_style()
         return diff_highlighted
 
-    def update(self, left_module: FSModule, right_module: FSModule) -> None:
+    def update(self, left_module: Module, right_module: Module) -> None:
         self.left_module = left_module
         self.right_module = right_module
         self.refresh(layout=True)
