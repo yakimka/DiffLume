@@ -38,10 +38,22 @@ def parse_content(text: str) -> Content:
 
 
 class Module(ABC):
+    _content: Content | None
+
     def __init__(self) -> None:
-        self.content: Content | None = None
         self.revisions: list[str] = []
         self.revisions_content: dict[str, Content] = {}
+        self._content = None
+
+    @property
+    def content(self) -> Content:
+        if self._content is None:
+            raise RuntimeError("Module content is not ready")
+        return self._content
+
+    @content.setter
+    def content(self, content: Content) -> None:
+        self._content = content
 
     def ready(self) -> bool:
         return self.content is not None

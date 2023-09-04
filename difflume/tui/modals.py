@@ -1,3 +1,4 @@
+# mypy: disable-error-code="override, misc"
 from __future__ import annotations
 
 import os
@@ -20,10 +21,10 @@ if TYPE_CHECKING:
 
 class Modal(ModalScreen):
     BINDINGS = [Binding("escape,q", "pop_screen", "Close", show=True)]
+    NAME = ""
 
 
 class SelectFileModal(Modal):
-    app: DiffLume
     NAME = "File"
 
     def compose(self) -> Generator[ComposeResult, None, None]:
@@ -38,7 +39,7 @@ class SelectFileModal(Modal):
 
 
 class SelectURLModal(Modal):
-    app: DiffLume
+    app: DiffLume  # type: ignore[assignment]
     NAME = "URL"
 
     def compose(self) -> Generator[ComposeResult, None, None]:
@@ -54,7 +55,6 @@ class SelectURLModal(Modal):
 
 
 class OpenFileModal(Modal):
-    app: DiffLume
     CHILD_MODALS = [
         SelectURLModal,
         SelectFileModal,

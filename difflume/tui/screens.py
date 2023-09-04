@@ -1,5 +1,7 @@
+# mypy: disable-error-code="override, misc"
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Literal
 
@@ -15,7 +17,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from difflume.diffapp.modules import Module
-    from difflume.tui.app import DiffLume
 
 
 class ErrorScreen(Screen):
@@ -38,8 +39,7 @@ class HelpScreen(Screen):
 
 
 class DiffScreen(Screen):
-    app: DiffLume
-    CSS_PATH = "css/main.tcss"
+    CSS_PATH = os.path.join("css", "main.tcss")
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
@@ -68,7 +68,9 @@ class DiffScreen(Screen):
 
         await self.app.push_screen(modals.OpenFileModal(), callback)
 
-    async def load_panels(self, module, *, panel: Literal["left", "right"]) -> None:
+    async def load_panels(
+        self, module: Module, *, panel: Literal["left", "right"]
+    ) -> None:
         module_widget = self.query_one(f"#{panel}-text", ModuleWidget)
         diff_widget_update = getattr(
             self.query_one("#diff-text", DiffWidget), f"update_{panel}"

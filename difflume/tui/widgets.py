@@ -55,11 +55,11 @@ class ModuleWidget(PanelContent):
         self.module = module
 
     @property
-    def module(self) -> Module:
-        return self._module or None
+    def module(self) -> Module | None:
+        return self._module
 
     @module.setter
-    def module(self, module: Module) -> None:
+    def module(self, module: Module | None) -> None:
         self._module = module
 
     def render(self) -> RenderableType:
@@ -105,19 +105,19 @@ class DiffWidget(PanelContent):
         self.right_module = right_module
 
     @property
-    def left_module(self) -> Module:
-        return self._left_module or None
+    def left_module(self) -> Module | None:
+        return self._left_module
 
     @left_module.setter
-    def left_module(self, left_module: Module) -> None:
+    def left_module(self, left_module: Module | None) -> None:
         self._left_module = left_module
 
     @property
-    def right_module(self) -> Module:
-        return self._right_module or None
+    def right_module(self) -> Module | None:
+        return self._right_module
 
     @right_module.setter
-    def right_module(self, right_module: Module) -> None:
+    def right_module(self, right_module: Module | None) -> None:
         self._right_module = right_module
 
     def render(self) -> RenderableType:
