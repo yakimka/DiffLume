@@ -10,7 +10,7 @@ from textual.screen import ModalScreen
 from textual.validation import URL
 from textual.widgets import Button, DirectoryTree, Footer, Input, Label
 
-from difflume.diffapp.modules import FSModule, URLModule
+from difflume.diffapp.modules import CouchDBModule, FSModule, URLModule
 
 if TYPE_CHECKING:
     from textual import events
@@ -38,10 +38,7 @@ class SelectFileModal(Modal):
         self.dismiss(new_module)
 
 
-class SelectURLModal(Modal):
-    app: DiffLume  # type: ignore[assignment]
-    NAME = "URL"
-
+class URLModalComposeMixin:
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Center(
             Input(placeholder="Enter URL", validators=[URL()]),
@@ -49,8 +46,22 @@ class SelectURLModal(Modal):
         )
         yield Footer()
 
+
+class SelectURLModal(URLModalComposeMixin, Modal):
+    app: DiffLume  # type: ignore[assignment]
+    NAME = "URL"
+
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         new_module = URLModule(event.value, client=self.app.deps.http_client)
+        self.dismiss(new_module)
+
+
+class SelectCouchDBURLModal(URLModalComposeMixin, Modal):
+    app: DiffLume  # type: ignore[assignment]
+    NAME = "CouchDB URL"
+
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
+        new_module = CouchDBModule(event.value, client=self.app.deps.http_client)
         self.dismiss(new_module)
 
 
@@ -58,6 +69,7 @@ class OpenFileModal(Modal):
     CHILD_MODALS = [
         SelectURLModal,
         SelectFileModal,
+        SelectCouchDBURLModal,
     ]
 
     def compose(self) -> Generator[ComposeResult, None, None]:

@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from difflume.http import url
+
 if TYPE_CHECKING:
     from httpx import AsyncClient
 
@@ -130,3 +132,19 @@ class URLModule(NoRevisionModule):
     async def _read_text(self) -> str:
         res = await self._client.get(self._url, timeout=15)
         return res.text
+
+
+class CouchDBModule(URLModule):
+    def rewrite_inputs(self) -> None:
+        parts = url.parse(self._url)
+        # Fauxton ver 1
+        if parts.path.startswith("/_utils/document.html"):
+            path, *rev = parts.query.split("@")
+            parts.path = path
+            parts.query = f"rev={rev[0]}" if rev else ""
+            self._url = url.build(parts)
+        # ver 2
+        elif parts.path == "/_utils/" and parts.fragment.startswith("database/"):
+            parts.path = parts.fragment.removeprefix("database/")
+            parts.fragment = ""
+            self._url = url.build(parts)
