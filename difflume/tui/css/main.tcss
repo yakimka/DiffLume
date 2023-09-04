@@ -1,0 +1,68 @@
+PanelView {
+    width: 1fr;
+    border: solid darkred;
+}
+
+PanelView:focus {
+    border: solid $accent;
+}
+
+PanelView.fullscreen {
+    border: none;
+}
+
+.disabled {
+    display: none;
+}
+
+.centered-top {
+    content-align: center top;
+}
+
+.centered-middle {
+    height: 100%;
+    content-align: center middle;
+}
+
+ErrorScreen Static {
+    border: solid darkred;
+    width: 100%;
+    height: 100%;
+}
+
+Modal {
+    align: center middle;
+}
+
+#open-file-dialog {
+    padding: 2 4;
+    width: 40%;
+    height: 50%;
+    border: solid darkred;
+    background: $surface;
+}
+
+#select-file-dialog {
+    padding: 2 4;
+    width: 40%;
+    height: 50%;
+    border: solid darkred;
+    background: $surface;
+}
+
+#select-url-dialog {
+    padding: 2 4;
+    width: 50%;
+    border: solid darkred;
+    background: $surface;
+}
+
+#open-file-dialog Button {
+    width: 100%;
+}
+
+#open-file-dialog-label {
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
+}

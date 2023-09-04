@@ -40,6 +40,11 @@ package:  ## Run packages (dependencies) checks
 	$(RUN) poetry check
 	$(RUN) poetry run pip check
 
+.PHONY: build-package
+build-package:  ## Run packages (dependencies) checks
+	$(RUN) poetry build
+	$(RUN) poetry export --format=requirements.txt --output=dist/requirements.txt
+
 .PHONY: checks
 checks: lint package test  ## Run linting and tests
 
@@ -59,6 +64,10 @@ clean-all:  ## Clean up all
 	rm -rf .cache
 	rm -rf .mypy_cache
 	rm -rf .pytest_cache
+
+.PHONY: bash
+bash:  ## Run bash
+	$(RUN) bash
 
 .PHONY: help
 help:
