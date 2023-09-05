@@ -9,7 +9,7 @@ from textual.containers import VerticalScroll
 from textual.widget import Widget
 
 from difflume.diffapp.differ import DiffType, HighlightType, create_diff
-from difflume.diffapp.modules import Module, TextType
+from difflume.diffapp.modules import Module, TextType, Content
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -53,6 +53,9 @@ class ModuleWidget(PanelContent):
     ) -> None:
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.module = module
+        self.current_revision = None
+        if module and module.revisions:
+            self.current_revision = module.revisions[0]
 
     @property
     def module(self) -> Module | None:
@@ -69,13 +72,23 @@ class ModuleWidget(PanelContent):
         if not self.module.ready():
             self._set_waiting_style()
             return Text("Loading...")
-        left_highlighter = get_highlighter(self.module.content.text_type)
-        left_text = self.module.content.text
+        left_highlighter = get_highlighter(self.content.text_type)
+        left_text = self.content.text
         self._remove_waiting_style()
         return left_highlighter(Text(left_text))
 
+    @property
+    def content(self) -> Content:
+        if self.current_revision is None:
+            return self.module.content
+        return self.module.revisions_content[self.current_revision]
+
     def update(self, module: Module | None) -> None:
         self.module = module
+        self.refresh(layout=True)
+
+    def set_revision(self, revision: str) -> None:
+        self.current_revision = revision
         self.refresh(layout=True)
 
 

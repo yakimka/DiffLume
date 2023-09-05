@@ -20,7 +20,7 @@ class TextType(Enum):
     JSON = "json"
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class Content:
     text: str
     text_type: TextType
@@ -77,6 +77,10 @@ class Module(ABC):
         self.rewrite_inputs()
         self.content = await self.read_content()
         self.revisions = await self.retrieve_revisions()
+        if self.revisions:
+            self.revisions_content = {
+                self.revisions[0]: self.content
+            }
 
     async def read_content(self) -> Content:
         """
@@ -173,7 +177,7 @@ class CouchDBModule(Module):
         parts = url.parse(self._url)
         parts.query = f"{parts.query}&revs=true"
         res = await self._client.get(url.build(parts), timeout=15)
-        revs_info = res.json()["_revs_info"]
+        revs_info = res.json().get("_revs_info", [])
         return [rev["rev"] for rev in revs_info if rev["status"] == "available"]
 
     async def read_revision(self, revision: str) -> Content:
