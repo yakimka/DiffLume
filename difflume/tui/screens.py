@@ -5,10 +5,11 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Literal
 
+from textual import work
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Markdown, Static
+from textual.widgets import Footer, Header, Markdown, Static, Select
 
 from difflume.tui import modals
 from difflume.tui.widgets import DiffWidget, ModuleWidget, PanelView
@@ -60,7 +61,7 @@ class DiffScreen(Screen):
 
     async def action_select_file(self, panel: Literal["left", "right"]) -> None:
         def select_module_callback(module: Module) -> None:
-            self.run_worker(self.load_panels(module, panel=panel), exclusive=True)
+            self.load_panels(module, panel=panel)
 
         def callback(modal_type: str) -> None:
             klass = getattr(modals, modal_type)
@@ -68,6 +69,7 @@ class DiffScreen(Screen):
 
         await self.app.push_screen(modals.OpenFileModal(), callback)
 
+    @work(exclusive=True)
     async def load_panels(
         self, module: Module, *, panel: Literal["left", "right"]
     ) -> None:
@@ -94,3 +96,9 @@ class DiffScreen(Screen):
             with PanelView():
                 yield ModuleWidget(None, id="right-text")
         yield Footer()
+
+    def on_module_widget_updated(self, event: ModuleWidget.Updated) -> None:
+        diff_widget = self.query_one(DiffWidget)
+        left_module_widget = self.query_one("#left-text", ModuleWidget)
+        right_module_widget = self.query_one("#left-text", ModuleWidget)
+        diff_widget.update(left_module_widget.module, right_module_widget.module)

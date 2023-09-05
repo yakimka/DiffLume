@@ -7,12 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from difflume.http import url
-from httpx import AsyncClient, HTTPStatusError
-
-
-
-class RevisionNotFoundError(Exception):
-    pass
+from httpx import AsyncClient
 
 
 class TextType(Enum):
@@ -76,7 +71,7 @@ class Module(ABC):
             return
         self.rewrite_inputs()
         self.content = await self.read_content()
-        self.revisions = await self.retrieve_revisions()
+        self.revisions = await self.read_revisions()
         if self.revisions:
             self.revisions_content = {
                 self.revisions[0]: self.content
@@ -95,24 +90,24 @@ class Module(ABC):
         """
 
     @abstractmethod
-    async def retrieve_revisions(self) -> list[str]:
+    async def read_revisions(self) -> list[str]:
         """
         Retrieve the revision numbers for the file.
         """
 
     @abstractmethod
-    async def read_revision(self, revision: str) -> Content:
+    async def load_revision(self, revision: str) -> None:
         """
-        Read the file at the given revision and return its contents.
+        Load the file at the given revision and cache its contents.
         """
 
 
 class NoRevisionModule(Module, ABC):
-    async def retrieve_revisions(self) -> list[str]:
+    async def read_revisions(self) -> list[str]:
         return []
 
-    async def read_revision(self, revision: str) -> Content:  # noqa: U100
-        raise RevisionNotFoundError
+    async def load_revision(self, revision: str) -> None:  # noqa: U100
+        return None
 
 
 class FSModule(NoRevisionModule):
@@ -173,25 +168,20 @@ class CouchDBModule(Module):
         res = await self._client.get(self._url, timeout=15)
         return res.text
 
-    async def retrieve_revisions(self) -> list[str]:
+    async def read_revisions(self) -> list[str]:
         parts = url.parse(self._url)
-        parts.query = f"{parts.query}&revs=true"
+        parts.query = f"{parts.query}&revs_info=true"
         res = await self._client.get(url.build(parts), timeout=15)
         revs_info = res.json().get("_revs_info", [])
         return [rev["rev"] for rev in revs_info if rev["status"] == "available"]
 
-    async def read_revision(self, revision: str) -> Content:
+    async def load_revision(self, revision: str) -> None:
         if revision in self.revisions_content:
-            return self.revisions_content[revision]
+            return None
         parts = url.parse(self._url)
         parts.query = f"{parts.query}&rev={revision}"
 
         res = await self._client.get(url.build(parts), timeout=15)
-        try:
-            res.raise_for_status()
-        except HTTPStatusError as e:
-            raise RevisionNotFoundError(revision) from e
+        res.raise_for_status()
 
-        content = parse_content(res.text)
-        self.revisions_content[revision] = content
-        return content
+        self.revisions_content[revision] = parse_content(res.text)

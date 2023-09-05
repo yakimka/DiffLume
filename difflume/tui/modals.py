@@ -8,7 +8,8 @@ from textual.binding import Binding
 from textual.containers import Center, ScrollableContainer
 from textual.screen import ModalScreen
 from textual.validation import URL
-from textual.widgets import Button, DirectoryTree, Footer, Input, Label
+from textual.widgets import Button, DirectoryTree, Footer, Input, Label, Select, RadioButton, \
+    RadioSet
 
 from difflume.diffapp.modules import CouchDBModule, FSModule, URLModule
 
@@ -90,3 +91,22 @@ class OpenFileModal(Modal):
         if event.key in [str(i) for i in range(1, 10)]:
             selected_modal = self.CHILD_MODALS[int(event.key) - 1]
             self.dismiss(selected_modal.__name__)
+
+
+class SelectRevisionModal(Modal):
+    def __init__(self, current_revision: str, revisions: list[str]) -> None:
+        super().__init__()
+        self.current_revision = current_revision
+        self.revisions = revisions
+
+    def compose(self) -> Generator[ComposeResult, None, None]:
+        with ScrollableContainer(id="select-revision-dialog"):
+            yield Label("Select a revision to view", id="select-revision-dialog-label")
+            with RadioSet():
+                for revision in self.revisions:
+                    yield RadioButton(revision, value=self.current_revision == revision)
+        yield Footer()
+
+    def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
+        self.dismiss(str(event.pressed.label))
+
