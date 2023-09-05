@@ -137,9 +137,15 @@ class DiffScreen(Screen):
         middle_panel = self.query_panel(PanelType.MIDDLE)
         middle_panel.update()
 
-    def apply_module_to_panel(self, module: Module, panel: Panel) -> None:
-        highlighter = get_highlighter(module.get_content().text_type)
-        panel.update(highlighter(Text(module.get_content().text)))
+    def apply_module_to_panel(self, module: Module | None, panel: Panel) -> None:
+        if module is None:
+            panel.set_empty()
+            return
+        highlighter = get_highlighter(
+            module.get_content(panel.current_revision).text_type
+        )
+        panel.update(highlighter(Text(module.get_content(panel.current_revision).text)))
+        panel.revisions = list(module.revisions)
 
     def update_diff_panel(self) -> None:
         if not self.left_module or not self.right_module:
@@ -171,6 +177,27 @@ class DiffScreen(Screen):
 
         panel = self.query_panel(event.panel_type)
         self.apply_module_to_panel(module, panel)
+        self.update_diff_panel()
+
+    async def on_panel_sync_panels_request(
+        self, event: Panel.SyncPanelsRequest
+    ) -> None:
+        panel = self.query_panel(event.panel_type)
+        self.sync_panels(panel)
+
+    def sync_panels(self, from_panel: Panel) -> None:
+        module = self.modules[from_panel.TYPE]
+        self.modules[PanelType.LEFT] = self.modules[PanelType.RIGHT] = module
+        to_panel = self.query_panel(
+            next(
+                type_
+                for type_ in (PanelType.LEFT, PanelType.RIGHT)
+                if type_ != from_panel.TYPE
+            )
+        )
+        to_panel.revisions = from_panel.revisions
+        to_panel.current_revision = from_panel.current_revision
+        self.apply_module_to_panel(module, to_panel)
         self.update_diff_panel()
 
     def on_mount(self) -> None:

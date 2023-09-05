@@ -31,11 +31,17 @@ class Panel(VerticalScroll):
     TYPE: PanelType
     BINDINGS = [
         Binding("r", "select_revision", "Revisions", show=True),
+        Binding("s", "sync_panels", "Sync", show=True),
     ]
 
     class RevisionSelected(Message):
         def __init__(self, revision: str, *, panel_type: PanelType) -> None:
             self.revision = revision
+            self.panel_type = panel_type
+            super().__init__()
+
+    class SyncPanelsRequest(Message):
+        def __init__(self, panel_type: PanelType) -> None:
             self.panel_type = panel_type
             super().__init__()
 
@@ -77,6 +83,9 @@ class Panel(VerticalScroll):
             modals.SelectRevisionModal(self.current_revision or "", self.revisions),
             fire_revision_event,
         )
+
+    async def action_sync_panels(self) -> None:
+        self.post_message(self.SyncPanelsRequest(self.TYPE))
 
 
 class LeftPanel(Panel):
