@@ -5,12 +5,10 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from difflume.http import url
+from httpx import AsyncClient, HTTPStatusError
 
-if TYPE_CHECKING:
-    from httpx import AsyncClient
 
 
 class RevisionNotFoundError(Exception):
@@ -134,7 +132,12 @@ class URLModule(NoRevisionModule):
         return res.text
 
 
-class CouchDBModule(URLModule):
+class CouchDBModule(Module):
+    def __init__(self, url: str, *, client: AsyncClient) -> None:
+        super().__init__()
+        self._url = url
+        self._client = client
+
     def rewrite_inputs(self) -> None:
         """
         Parse Fauxton admin URLs and rewrite them for retrieving JSON.
@@ -161,3 +164,30 @@ class CouchDBModule(URLModule):
             parts.path = parts.fragment.removeprefix("database/")
             parts.fragment = ""
             self._url = url.build(parts)
+
+    async def _read_text(self) -> str:
+        res = await self._client.get(self._url, timeout=15)
+        return res.text
+
+    async def retrieve_revisions(self) -> list[str]:
+        parts = url.parse(self._url)
+        parts.query = f"{parts.query}&revs=true"
+        res = await self._client.get(url.build(parts), timeout=15)
+        revs_info = res.json()["_revs_info"]
+        return [rev["rev"] for rev in revs_info if rev["status"] == "available"]
+
+    async def read_revision(self, revision: str) -> Content:
+        if revision in self.revisions_content:
+            return self.revisions_content[revision]
+        parts = url.parse(self._url)
+        parts.query = f"{parts.query}&rev={revision}"
+
+        res = await self._client.get(url.build(parts), timeout=15)
+        try:
+            res.raise_for_status()
+        except HTTPStatusError as e:
+            raise RevisionNotFoundError(revision) from e
+
+        content = parse_content(res.text)
+        self.revisions_content[revision] = content
+        return content
