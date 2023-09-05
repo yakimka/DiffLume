@@ -2,6 +2,10 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version
+
+- Hotkeys supports Cyrillic layout
+
 ## Version 0.2.0
 
 - Support for CouchDB

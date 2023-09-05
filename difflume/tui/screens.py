@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class ErrorScreen(Screen):
-    BINDINGS = [Binding("escape,space,q", "pop_screen", "Close", show=True)]
+    BINDINGS = [Binding("escape,space,q,й", "pop_screen", "Close", show=True)]
 
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Static("Error")
@@ -34,7 +34,7 @@ class ErrorScreen(Screen):
 class HelpScreen(Screen):
     MD_PATH = Path(__file__).parent / "help.md"
     BINDINGS = [
-        Binding("escape,space,q,question_mark", "pop_screen", "Close", show=True)
+        Binding("escape,space,q,й,question_mark", "pop_screen", "Close", show=True)
     ]
 
     def compose(self) -> Generator[ComposeResult, None, None]:
@@ -61,13 +61,13 @@ class DiffScreen(Screen):
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f1", "select_file('left')", "Open Left", show=True),
         Binding("f2", "select_file('right')", "Open Right", show=True),
-        Binding("[", "prev_revision", "Prev Revision", show=False),
-        Binding("]", "next_revision", "Next Revision", show=False),
-        Binding("{", "prev_revision_sync", "Prev Revision Sync", show=False),
-        Binding("}", "next_revision_sync", "Next Revision Sync", show=False),
-        Binding("f", "toggle_full_screen", "Full Screen", show=True),
+        Binding("[,х", "prev_revision", "Prev Revision", show=False),
+        Binding("],ъ,ї", "next_revision", "Next Revision", show=False),
+        Binding("{,Х", "prev_revision_sync", "Prev Revision Sync", show=False),
+        Binding("},Ъ,Ї", "next_revision_sync", "Next Revision Sync", show=False),
+        Binding("f,а", "toggle_full_screen", "Full Screen", show=True),
         Binding(
-            "c",
+            "c,с",
             "toggle_class('Panel Content', 'centered-top')",
             "Center text",
             show=True,
