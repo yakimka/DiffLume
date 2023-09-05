@@ -61,6 +61,10 @@ class DiffScreen(Screen):
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f1", "select_file('left')", "Open Left", show=True),
         Binding("f2", "select_file('right')", "Open Right", show=True),
+        Binding("[", "prev_revision", "Prev Revision", show=False),
+        Binding("]", "next_revision", "Next Revision", show=False),
+        Binding("{", "prev_revision_sync", "Prev Revision Sync", show=False),
+        Binding("}", "next_revision_sync", "Next Revision Sync", show=False),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
         Binding(
             "c",
@@ -118,6 +122,48 @@ class DiffScreen(Screen):
 
         await self.app.push_screen(modals.OpenFileModal(), callback)
 
+    def action_prev_revision(self) -> None:
+        self.prev_revision(self.query_panel(PanelType.FOCUS))
+
+    def action_next_revision(self) -> None:
+        self.next_revision(self.query_panel(PanelType.FOCUS))
+
+    def action_prev_revision_sync(self) -> None:
+        self.prev_revision(
+            *[
+                self.query_panel(panel_type)
+                for panel_type in (PanelType.LEFT, PanelType.RIGHT)
+            ]
+        )
+
+    def action_next_revision_sync(self) -> None:
+        self.next_revision(
+            *[
+                self.query_panel(panel_type)
+                for panel_type in (PanelType.LEFT, PanelType.RIGHT)
+            ]
+        )
+
+    def prev_revision(self, *panel: Panel) -> None:
+        try:
+            indexes = [p.revisions.index(p.current_revision or "") for p in panel]
+        except ValueError:
+            return
+        if any(i == len(p.revisions) - 1 for i, p in zip(indexes, panel)):
+            return
+        for i, p in zip(indexes, panel):
+            self.set_revision(p.revisions[i + 1], panel=p)
+
+    def next_revision(self, *panel: Panel) -> None:
+        try:
+            indexes = [p.revisions.index(p.current_revision or "") for p in panel]
+        except ValueError:
+            return
+        if 0 in indexes:
+            return
+        for i, p in zip(indexes, panel):
+            self.set_revision(p.revisions[i - 1], panel=p)
+
     @work
     async def load_panel(self, module: Module, *, panel_type: PanelType) -> None:
         self.set_loading_styles(panel_type)
@@ -168,14 +214,18 @@ class DiffScreen(Screen):
             )
         middle_panel.update(diff_highlighted)
 
-    @work
-    async def on_panel_revision_selected(self, event: Panel.RevisionSelected) -> None:
-        self.set_loading_styles(event.panel_type)
-        module = self.modules[event.panel_type]
-        assert module, "Unexpected empty module"
-        await module.load_revision(event.revision)
-
+    def on_panel_revision_selected(self, event: Panel.RevisionSelected) -> None:
         panel = self.query_panel(event.panel_type)
+        self.set_revision(event.revision, panel=panel)
+
+    @work
+    async def set_revision(self, revision: str, *, panel: Panel) -> None:
+        self.set_loading_styles(panel.TYPE)
+        module = self.modules[panel.TYPE]
+        assert module, "Unexpected empty module"
+        await module.load_revision(revision)
+        panel.current_revision = revision
+
         self.apply_module_to_panel(module, panel)
         self.update_diff_panel()
 
