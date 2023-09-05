@@ -30,8 +30,8 @@ class Content(Static):
 class Panel(VerticalScroll):
     TYPE: PanelType
     BINDINGS = [
-        Binding("r", "select_revision", "Revisions", show=True),
-        Binding("s", "sync_panels", "Sync", show=True),
+        Binding("r,к", "select_revision", "Revisions", show=True),
+        Binding("s,ы,і", "sync_panels", "Sync", show=True),
     ]
 
     class RevisionSelected(Message):

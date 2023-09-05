@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class Modal(ModalScreen):
-    BINDINGS = [Binding("escape,q", "pop_screen", "Close", show=True)]
+    BINDINGS = [Binding("escape,q,й", "pop_screen", "Close", show=True)]
     NAME = ""
 
 
