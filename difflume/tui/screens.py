@@ -43,7 +43,7 @@ class DiffScreen(Screen):
     BINDINGS = [
         Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
         Binding("f1", "select_file('left')", "Open Left", show=True),
-        Binding("f3", "select_file('right')", "Open Right", show=True),
+        Binding("f2", "select_file('right')", "Open Right", show=True),
         Binding("f", "toggle_full_screen", "Full Screen", show=True),
         Binding(
             "c",
