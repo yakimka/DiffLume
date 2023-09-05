@@ -1,13 +1,13 @@
-PanelView {
+Panel {
     width: 1fr;
     border: solid darkred;
 }
 
-PanelView:focus {
+Panel:focus {
     border: solid $accent;
 }
 
-PanelView.fullscreen {
+Panel.fullscreen {
     border: none;
 }
 

@@ -8,8 +8,15 @@ from textual.binding import Binding
 from textual.containers import Center, ScrollableContainer
 from textual.screen import ModalScreen
 from textual.validation import URL
-from textual.widgets import Button, DirectoryTree, Footer, Input, Label, Select, RadioButton, \
-    RadioSet
+from textual.widgets import (
+    Button,
+    DirectoryTree,
+    Footer,
+    Input,
+    Label,
+    RadioButton,
+    RadioSet,
+)
 
 from difflume.diffapp.modules import CouchDBModule, FSModule, URLModule
 
@@ -109,4 +116,3 @@ class SelectRevisionModal(Modal):
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         self.dismiss(str(event.pressed.label))
-

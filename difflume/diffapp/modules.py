@@ -5,9 +5,12 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from difflume.http import url
-from httpx import AsyncClient
+
+if TYPE_CHECKING:
+    from httpx import AsyncClient
 
 
 class TextType(Enum):
@@ -37,20 +40,14 @@ class Module(ABC):
     def __init__(self) -> None:
         self.revisions: list[str] = []
         self.revisions_content: dict[str, Content] = {}
-        self._content = None
 
-    @property
-    def content(self) -> Content:
-        if self._content is None:
-            raise RuntimeError("Module content is not ready")
-        return self._content
-
-    @content.setter
-    def content(self, content: Content) -> None:
-        self._content = content
+    def get_content(self, revision: str | None = None) -> Content:
+        if revision is None:
+            revision = "actual"
+        return self.revisions_content[revision]
 
     def ready(self) -> bool:
-        return self._content is not None
+        return bool(self.revisions_content)
 
     def rewrite_inputs(self) -> None:
         """
@@ -70,12 +67,11 @@ class Module(ABC):
         if self.ready():
             return
         self.rewrite_inputs()
-        self.content = await self.read_content()
+        content = await self.read_content()
         self.revisions = await self.read_revisions()
+        self.revisions_content["actual"] = content
         if self.revisions:
-            self.revisions_content = {
-                self.revisions[0]: self.content
-            }
+            self.revisions_content[self.revisions[0]] = content
 
     async def read_content(self) -> Content:
         """
