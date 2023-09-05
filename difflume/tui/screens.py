@@ -90,6 +90,19 @@ class DiffScreen(Screen):
     def right_module(self) -> Module | None:
         return self.modules[PanelType.RIGHT]
 
+    def compose(self) -> Generator[ComposeResult, None, None]:
+        yield Header()
+        with Horizontal():
+            yield LeftPanel()
+            yield MiddlePanel()
+            yield RightPanel()
+        yield Footer()
+
+    def query_panel(self, panel_type: PanelType = PanelType.FOCUS) -> Panel:
+        if panel_type is PanelType.FOCUS:
+            return self.query_one("Panel:focus", Panel)
+        return self.query_one(f"{panel_type.value.capitalize()}Panel", Panel)
+
     async def action_toggle_full_screen(self) -> None:
         await self.app.action_toggle_class("Panel", "disabled")
         await self.app.action_remove_class("Panel:focus", "disabled")
@@ -148,19 +161,6 @@ class DiffScreen(Screen):
                 regexp, Style(bgcolor=DIFF_COLORS[highlight_type])
             )
         middle_panel.update(diff_highlighted)
-
-    def query_panel(self, panel_type: PanelType = PanelType.FOCUS) -> Panel:
-        if panel_type is PanelType.FOCUS:
-            return self.query_one("Panel:focus", Panel)
-        return self.query_one(f"{panel_type.value.capitalize()}Panel", Panel)
-
-    def compose(self) -> Generator[ComposeResult, None, None]:
-        yield Header()
-        with Horizontal():
-            yield LeftPanel()
-            yield MiddlePanel()
-            yield RightPanel()
-        yield Footer()
 
     @work
     async def on_panel_revision_selected(self, event: Panel.RevisionSelected) -> None:
