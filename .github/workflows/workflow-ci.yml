@@ -50,7 +50,6 @@ jobs:
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          cp .env.template .env
           docker login "$REGISTRY" -u "$DOCKER_USERNAME" --password="${DOCKERHUB_TOKEN}"
           docker buildx create --use --driver=docker-container
           docker --version && docker compose --version
@@ -106,7 +105,6 @@ jobs:
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          cp .env.template .env
           docker login "$REGISTRY" -u "$DOCKER_USERNAME" --password="${DOCKERHUB_TOKEN}"
           docker buildx create --use --driver=docker-container
           docker --version && docker compose --version
@@ -163,7 +161,6 @@ jobs:
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          cp .env.template .env
           docker login "$REGISTRY" -u "$DOCKER_USERNAME" --password="${DOCKERHUB_TOKEN}"
           docker buildx create --use --driver=docker-container
           docker --version && docker compose --version
