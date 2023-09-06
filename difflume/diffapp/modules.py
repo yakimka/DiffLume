@@ -5,6 +5,7 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from json import JSONDecodeError
 
 from httpx import AsyncClient, HTTPError
 
@@ -183,9 +184,9 @@ class CouchDBModule(Module):
         try:
             res = await self._client.get(url.build(parts), timeout=15)
             res.raise_for_status()
-        except HTTPError as e:
+            revs_info = res.json().get("_revs_info", [])
+        except (HTTPError, JSONDecodeError) as e:
             raise ReadError("Could not read revisions") from e
-        revs_info = res.json().get("_revs_info", [])
         return [rev["rev"] for rev in revs_info if rev["status"] == "available"]
 
     async def load_revision(self, revision: str) -> None:
