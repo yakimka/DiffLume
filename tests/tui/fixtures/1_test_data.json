@@ -1,0 +1,10 @@
+{
+  "_id": "my_id",
+  "_rev": "7-abc",
+  "key": "value",
+  "another_key": "another_value",
+  "nested": {
+    "key": "value",
+    "another_key": "another_value"
+  }
+}

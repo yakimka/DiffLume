@@ -23,7 +23,7 @@ run_ci () {
   poetry run mypy
   poetry check
   poetry run pip check
-  poetry run pytest --cov=difflume
+  poetry run pytest --cov=tests --cov=difflume
   poetry run pytest --dead-fixtures
   poetry build
   poetry export --format=requirements.txt --output=dist/requirements.txt

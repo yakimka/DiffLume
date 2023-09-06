@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from httpx import AsyncClient
@@ -12,9 +14,13 @@ class Deps:
     http_client: AsyncClient
 
     @classmethod
-    def create(cls) -> "Deps":
+    def create(cls) -> Deps:
         return cls(
-            http_client=AsyncClient(follow_redirects=True, verify=False)  # noqa: S501
+            http_client=AsyncClient(
+                follow_redirects=True,
+                verify=False,  # noqa: S501
+                timeout=15,
+            )
         )
 
     async def close(self) -> None:

@@ -32,7 +32,7 @@ mypy:  ## Run mypy
 
 .PHONY: test
 test:  ## Run tests
-	$(RUN) poetry run pytest --cov=difflume
+	$(RUN) poetry run pytest --cov=tests --cov=difflume $(args)
 	$(RUN) poetry run pytest --dead-fixtures
 
 .PHONY: package

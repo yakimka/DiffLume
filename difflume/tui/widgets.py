@@ -29,10 +29,6 @@ class Content(Static):
 
 class Panel(VerticalScroll):
     TYPE: PanelType
-    BINDINGS = [
-        Binding("r,к", "select_revision", "Revisions", show=True),
-        Binding("s,ы,і", "sync_panels", "Sync", show=True),
-    ]
 
     class RevisionSelected(Message):
         def __init__(self, revision: str, *, panel_type: PanelType) -> None:
@@ -95,13 +91,21 @@ class Panel(VerticalScroll):
         self.post_message(self.SyncPanelsRequest(self.TYPE))
 
 
+TEXT_PANEL_BINDINGS: list[Binding | tuple[str, str] | tuple[str, str, str]] = [
+    Binding("r,к", "select_revision", "Revisions", show=True),
+    Binding("s,ы,і", "sync_panels", "Sync", show=True),
+]
+
+
 class LeftPanel(Panel):
     TYPE = PanelType.LEFT
+    BINDINGS = TEXT_PANEL_BINDINGS
 
 
-class MiddlePanel(Panel, inherit_bindings=False):
+class MiddlePanel(Panel):
     TYPE = PanelType.MIDDLE
 
 
 class RightPanel(Panel):
     TYPE = PanelType.RIGHT
+    BINDINGS = TEXT_PANEL_BINDINGS

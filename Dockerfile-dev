@@ -12,7 +12,8 @@ ENV PYTHONUNBUFFERED=1 \
     VENV_PATH="/opt/venv" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
-    CODE_PATH="/opt/code"
+    CODE_PATH="/opt/code" \
+    TERM=xterm-256color
 
 ENV XDG_CACHE_HOME="$CODE_PATH/.cache" \
     XDG_CONFIG_HOME="/tmp/.config"
