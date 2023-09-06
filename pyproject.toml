@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "DiffLume"
 description = "TUI app for viewing deltas between text files"
-version = "0.3.0"
+version = "0.3.1"
 license = "MIT"
 
 authors = [
