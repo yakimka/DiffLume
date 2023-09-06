@@ -7,6 +7,7 @@
 
 TUI app for viewing deltas between text files
 
+![screenshot](assets/screenshot.png)
 
 ## Features
 
