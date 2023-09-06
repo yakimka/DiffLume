@@ -7,7 +7,7 @@
 
 TUI app for viewing deltas between text files
 
-![screenshot](assets/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/yakimka/DiffLume/main/assets/screenshot.png)
 
 ## Features
 
