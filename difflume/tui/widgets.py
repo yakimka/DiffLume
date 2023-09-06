@@ -64,12 +64,19 @@ class Panel(VerticalScroll):
         self.query_one(Content).remove_class("centered-middle")
 
     def set_empty(self) -> None:
+        self.reset()
         self.update("Empty")
         self.query_one(Content).add_class("centered-middle")
 
     def set_loading(self) -> None:
+        self.reset()
         self.update("Loading...")
         self.query_one(Content).add_class("centered-middle")
+
+    def reset(self) -> None:
+        self.revisions = []
+        self.current_revision = None
+        self.update("")
 
     async def action_select_revision(self) -> None:
         if not self.revisions:

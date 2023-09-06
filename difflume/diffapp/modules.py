@@ -5,12 +5,10 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING
+
+from httpx import AsyncClient, HTTPError
 
 from difflume.http import url
-
-if TYPE_CHECKING:
-    from httpx import AsyncClient
 
 
 class TextType(Enum):
@@ -32,6 +30,10 @@ def parse_content(text: str) -> Content:
         )
         text_type = TextType.JSON
     return Content(text=text, text_type=text_type)
+
+
+class ReadError(Exception):
+    pass
 
 
 class Module(ABC):
@@ -112,8 +114,11 @@ class FSModule(NoRevisionModule):
         self._path = path
 
     async def _read_text(self) -> str:
-        with open(self._path, "r") as f:
-            return f.read()
+        try:
+            with open(self._path, "r") as f:
+                return f.read()
+        except (OSError, UnicodeDecodeError) as e:
+            raise ReadError(f"Could not read file {self._path}") from e
 
 
 class URLModule(NoRevisionModule):
@@ -123,8 +128,12 @@ class URLModule(NoRevisionModule):
         self._client = client
 
     async def _read_text(self) -> str:
-        res = await self._client.get(self._url, timeout=15)
-        return res.text
+        try:
+            res = await self._client.get(self._url, timeout=15)
+            res.raise_for_status()
+            return res.text
+        except HTTPError as e:
+            raise ReadError(f"Could not read URL {self._url}") from e
 
 
 class CouchDBModule(Module):
@@ -161,13 +170,21 @@ class CouchDBModule(Module):
             self._url = url.build(parts)
 
     async def _read_text(self) -> str:
-        res = await self._client.get(self._url, timeout=15)
-        return res.text
+        try:
+            res = await self._client.get(self._url, timeout=15)
+            res.raise_for_status()
+            return res.text
+        except HTTPError as e:
+            raise ReadError(f"Could not read URL {self._url}") from e
 
     async def read_revisions(self) -> list[str]:
         parts = url.parse(self._url)
         parts.query = f"{parts.query}&revs_info=true"
-        res = await self._client.get(url.build(parts), timeout=15)
+        try:
+            res = await self._client.get(url.build(parts), timeout=15)
+            res.raise_for_status()
+        except HTTPError as e:
+            raise ReadError("Could not read revisions") from e
         revs_info = res.json().get("_revs_info", [])
         return [rev["rev"] for rev in revs_info if rev["status"] == "available"]
 
@@ -177,7 +194,10 @@ class CouchDBModule(Module):
         parts = url.parse(self._url)
         parts.query = f"{parts.query}&rev={revision}"
 
-        res = await self._client.get(url.build(parts), timeout=15)
-        res.raise_for_status()
+        try:
+            res = await self._client.get(url.build(parts), timeout=15)
+            res.raise_for_status()
+        except HTTPError as e:
+            raise ReadError(f"Could not read revision {revision}") from e
 
         self.revisions_content[revision] = parse_content(res.text)
