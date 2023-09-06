@@ -2,9 +2,10 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
-## Version
+## Version 0.3.0
 
 - Hotkeys supports Cyrillic layout
+- Handle IO errors
 
 ## Version 0.2.0
 

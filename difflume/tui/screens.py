@@ -12,23 +12,15 @@ from textual import work
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Markdown, Static
+from textual.widgets import Footer, Header, Markdown
 
 from difflume.diffapp.differ import DiffType, HighlightType, create_diff
-from difflume.diffapp.modules import Module, TextType
+from difflume.diffapp.modules import Module, ReadError, TextType
 from difflume.tui import modals
 from difflume.tui.widgets import LeftPanel, MiddlePanel, Panel, PanelType, RightPanel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-class ErrorScreen(Screen):
-    BINDINGS = [Binding("escape,space,q,й", "pop_screen", "Close", show=True)]
-
-    def compose(self) -> Generator[ComposeResult, None, None]:
-        yield Static("Error")
-        yield Footer()
 
 
 class HelpScreen(Screen):
@@ -168,7 +160,13 @@ class DiffScreen(Screen):
     async def load_panel(self, module: Module, *, panel_type: PanelType) -> None:
         self.set_loading_styles(panel_type)
         self.modules[panel_type] = module
-        await module.load()
+
+        try:
+            await module.load()
+        except ReadError as e:
+            self.show_error(str(e))
+            self.set_empty_styles(panel_type)
+            return
 
         panel = self.query_panel(panel_type)
         panel.revisions = list(module.revisions)
@@ -177,9 +175,18 @@ class DiffScreen(Screen):
         self.apply_module_to_panel(module, panel)
         self.update_diff_panel()
 
+    def show_error(self, message: str) -> None:
+        self.notify(message, title="ERROR", severity="error", timeout=10)
+
     def set_loading_styles(self, panel_type: PanelType) -> None:
         panel = self.query_panel(panel_type)
         panel.set_loading()
+        middle_panel = self.query_panel(PanelType.MIDDLE)
+        middle_panel.update()
+
+    def set_empty_styles(self, panel_type: PanelType) -> None:
+        panel = self.query_panel(panel_type)
+        panel.set_empty()
         middle_panel = self.query_panel(PanelType.MIDDLE)
         middle_panel.update()
 
@@ -223,7 +230,14 @@ class DiffScreen(Screen):
         self.set_loading_styles(panel.TYPE)
         module = self.modules[panel.TYPE]
         assert module, "Unexpected empty module"
-        await module.load_revision(revision)
+
+        try:
+            await module.load_revision(revision)
+        except ReadError as e:
+            self.show_error(str(e))
+            self.set_empty_styles(panel.TYPE)
+            return
+
         panel.current_revision = revision
 
         self.apply_module_to_panel(module, panel)

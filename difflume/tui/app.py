@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from textual.app import App
 from textual.binding import Binding
 
-from difflume.tui.screens import DiffScreen, ErrorScreen, HelpScreen
+from difflume.tui.screens import DiffScreen, HelpScreen
 
 
 @dataclass
@@ -27,7 +27,6 @@ class DiffLume(App[None]):
     ]
 
     SCREENS = {
-        "error_screen": ErrorScreen,
         "help": HelpScreen,
     }
 
