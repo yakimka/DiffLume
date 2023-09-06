@@ -33,6 +33,10 @@ def parse_content(text: str) -> Content:
     return Content(text=text, text_type=text_type)
 
 
+class RevisionNotFoundError(Exception):
+    pass
+
+
 class ReadError(Exception):
     pass
 
@@ -46,8 +50,11 @@ class Module(ABC):
 
     def get_content(self, revision: str | None = None) -> Content:
         if revision is None:
-            revision = "actual"
-        return self.revisions_content[revision]
+            revision = "latest"
+        try:
+            return self.revisions_content[revision]
+        except KeyError:
+            raise RevisionNotFoundError(f"Could not find revision {revision}") from None
 
     def ready(self) -> bool:
         return bool(self.revisions_content)
@@ -72,7 +79,7 @@ class Module(ABC):
         self.rewrite_inputs()
         content = await self.read_content()
         self.revisions = await self.read_revisions()
-        self.revisions_content["actual"] = content
+        self.revisions_content["latest"] = content
         if self.revisions:
             self.revisions_content[self.revisions[0]] = content
 
@@ -101,7 +108,7 @@ class Module(ABC):
         """
 
 
-class NoRevisionModule(Module, ABC):
+class NoRevisionModuleMixin:
     async def read_revisions(self) -> list[str]:
         return []
 
@@ -109,7 +116,7 @@ class NoRevisionModule(Module, ABC):
         return None
 
 
-class FSModule(NoRevisionModule):
+class FSModule(NoRevisionModuleMixin, Module):
     def __init__(self, path: str) -> None:
         super().__init__()
         self._path = path
@@ -122,7 +129,7 @@ class FSModule(NoRevisionModule):
             raise ReadError(f"Could not read file {self._path}") from e
 
 
-class URLModule(NoRevisionModule):
+class URLModule(NoRevisionModuleMixin, Module):
     def __init__(self, url: str, *, client: AsyncClient) -> None:
         super().__init__()
         self._url = url
@@ -130,7 +137,7 @@ class URLModule(NoRevisionModule):
 
     async def _read_text(self) -> str:
         try:
-            res = await self._client.get(self._url, timeout=15)
+            res = await self._client.get(self._url)
             res.raise_for_status()
             return res.text
         except HTTPError as e:
@@ -172,7 +179,7 @@ class CouchDBModule(Module):
 
     async def _read_text(self) -> str:
         try:
-            res = await self._client.get(self._url, timeout=15)
+            res = await self._client.get(self._url)
             res.raise_for_status()
             return res.text
         except HTTPError as e:
@@ -180,9 +187,9 @@ class CouchDBModule(Module):
 
     async def read_revisions(self) -> list[str]:
         parts = url.parse(self._url)
-        parts.query = f"{parts.query}&revs_info=true"
+        parts.query = "&".join([p for p in (parts.query, "revs_info=true") if p])
         try:
-            res = await self._client.get(url.build(parts), timeout=15)
+            res = await self._client.get(url.build(parts))
             res.raise_for_status()
             revs_info = res.json().get("_revs_info", [])
         except (HTTPError, JSONDecodeError) as e:
@@ -193,10 +200,10 @@ class CouchDBModule(Module):
         if revision in self.revisions_content:
             return None
         parts = url.parse(self._url)
-        parts.query = f"{parts.query}&rev={revision}"
+        parts.query = "&".join([p for p in (parts.query, f"rev={revision}") if p])
 
         try:
-            res = await self._client.get(url.build(parts), timeout=15)
+            res = await self._client.get(url.build(parts))
             res.raise_for_status()
         except HTTPError as e:
             raise ReadError(f"Could not read revision {revision}") from e

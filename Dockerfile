@@ -29,6 +29,7 @@ FROM python:3.11-slim-bullseye as production
 
 RUN useradd -M appuser --uid=1000 --shell=/bin/false
 USER appuser
+ENV TERM=xterm-256color
 
 ENV PATH="/venv/bin:$PATH"
 WORKDIR /opt/app

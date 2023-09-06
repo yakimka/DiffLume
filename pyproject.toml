@@ -45,6 +45,9 @@ pytest-cov = "^4.1.0"
 pytest-deadfixtures = "^2.2.1"
 pytest-randomly = "^3.12"
 
+[tool.poetry.group.dev.dependencies]
+pytest-httpserver = "^1.0.8"
+
 [tool.isort]
 # isort configuration:
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
