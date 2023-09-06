@@ -36,8 +36,13 @@ class SelectFileModal(Modal):
     NAME = "File"
 
     def compose(self) -> Generator[ComposeResult, None, None]:
-        yield DirectoryTree(os.getcwd(), id="select-file-dialog")
+        yield DirectoryTree(self.get_path_for_tree_home(), id="select-file-dialog")
         yield Footer()
+
+    def get_path_for_tree_home(self) -> str:
+        if from_env := os.getenv("DIFF_LUME_FILE_TREE_HOME"):
+            return from_env
+        return os.getcwd()
 
     async def on_directory_tree_file_selected(
         self, event: DirectoryTree.FileSelected

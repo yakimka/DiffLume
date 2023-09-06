@@ -15,48 +15,15 @@ pytestmark = pytest.mark.usefixtures("couchdb_server")
 
 
 @pytest.fixture()
-def url() -> str:
-    return "/collection/my_id"
-
-
-@pytest.fixture()
 async def client() -> httpx.AsyncClient:
     async with httpx.AsyncClient(timeout=1) as client:
         yield client
 
 
 @pytest.fixture()
-def couchdb_server(httpserver, response_data, url):
-    httpserver.make_endpoint(
-        content={
-            "_revs_info": [
-                {"rev": "7-abc", "status": "available"},
-                {"rev": "6-def", "status": "available"},
-                {"rev": "5-ghi", "status": "missing"},
-            ],
-            **response_data,
-        },
-        query="revs_info=true",
-        path=url,
-    )
-    httpserver.make_endpoint(content=response_data, path=url, query="rev=7-abc")
-    httpserver.make_endpoint(
-        content={
-            **response_data,
-            "_rev": "6-def",
-        },
-        path=url,
-        query="rev=6-def",
-    )
-    httpserver.make_endpoint(content=response_data, path=url)
-
-    return httpserver
-
-
-@pytest.fixture()
-def couchdb_module_maker(url, client, couchdb_server):
+def couchdb_module_maker(document_url, client, couchdb_server):
     def maker(
-        url: str = couchdb_server.url_for(url),  # noqa: B008
+        url: str = couchdb_server.url_for(document_url),  # noqa: B008
         client: httpx.AsyncClient = client,
     ) -> CouchDBModule:
         return CouchDBModule(url, client=client)
@@ -67,20 +34,6 @@ def couchdb_module_maker(url, client, couchdb_server):
 @pytest.fixture()
 def sut(couchdb_module_maker) -> CouchDBModule:
     return couchdb_module_maker()
-
-
-@pytest.fixture()
-def response_data() -> dict:
-    return {
-        "_id": "my_id",
-        "_rev": "7-abc",
-        "key": "value",
-        "another_key": "another_value",
-        "nested": {
-            "key": "value",
-            "another_key": "another_value",
-        },
-    }
 
 
 @pytest.fixture()

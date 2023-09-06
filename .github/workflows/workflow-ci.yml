@@ -75,6 +75,12 @@ jobs:
       - name: Run checks
         run: docker compose run -e CI=1 --user=$(id -u) --rm devtools ./ci.sh
 
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: snapshot-report-py${{ matrix.python-version }}
+          path: snapshot_report.html
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
