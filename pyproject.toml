@@ -32,7 +32,7 @@ difflume = "difflume.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-textual = "^0.35.1"
+textual = ">=0.35.1,<0.37.0"
 httpx = "^0.24.1"
 
 [tool.poetry.dev-dependencies]
