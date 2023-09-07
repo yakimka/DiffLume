@@ -61,19 +61,19 @@ Modal {
     background: $surface;
 }
 
-#select-revision-dialog {
+#radio-buttons-dialog {
     padding: 2 4;
     width: 40%;
     height: 50%;
     border: solid darkred;
     background: $surface;
 }
-#select-revision-dialog RadioSet {
+#radio-buttons-dialog RadioSet {
     margin: 2 2;
     width: 100%;
 }
 
-#select-revision-dialog-label {
+#radio-buttons-dialog-label {
     height: 1fr;
     width: 1fr;
     content-align: center middle;

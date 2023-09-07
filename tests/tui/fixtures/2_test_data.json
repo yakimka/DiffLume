@@ -1,0 +1,36 @@
+{
+  "_id": "my_id",
+  "_rev": "8-xyz",
+  "key": "value",
+  "another_key": "another_value",
+  "nested": {
+    "key": "value",
+    "another_key": "another_value"
+  },
+  "array": [
+    "value1",
+    "value2"
+  ],
+  "another_array": [
+    {
+      "key": "value",
+      "another_key": "another_value"
+    },
+    {
+      "key": "value",
+      "another_key": "another_value"
+    },
+    {
+      "key": "value",
+      "another_key": "another_value"
+    },
+    {
+      "key": "value",
+      "another_key": "another_value"
+    }
+  ],
+  "another_nested": {
+    "key": "value",
+    "another_key": "another_value"
+  }
+}

@@ -6,8 +6,8 @@ from typing import Generator, Iterable
 
 
 class DiffType(Enum):
-    NDIFF = "ndiff"
-    NDIFF_COLLAPSED = "ndiff_collapsed"
+    NDIFF_COLLAPSED = "Ndiff Collapsed"
+    NDIFF = "Ndiff"
 
 
 class HighlightType(Enum):

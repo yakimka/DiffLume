@@ -9,6 +9,7 @@ from textual.containers import VerticalScroll
 from textual.message import Message
 from textual.widgets import Static
 
+from difflume.diffapp.differ import DiffType
 from difflume.tui import modals
 
 if TYPE_CHECKING:
@@ -38,8 +39,14 @@ class Panel(VerticalScroll):
 
     class SyncPanelsRequest(Message):
         def __init__(self, panel_type: PanelType) -> None:
-            self.panel_type = panel_type
             super().__init__()
+            self.panel_type = panel_type
+
+    class DIffTypeSelected(Message):
+        def __init__(self, diff_type: DiffType, *, panel_type: PanelType) -> None:
+            super().__init__()
+            self.diff_type = diff_type
+            self.panel_type = panel_type
 
     def __init__(
         self,
@@ -51,6 +58,8 @@ class Panel(VerticalScroll):
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.revisions: list[str] = []
         self.current_revision: str | None = None
+        self.diff_types: list[str] = [diff.value for diff in DiffType]
+        self.current_diff_type: str = DiffType.NDIFF_COLLAPSED.value
 
     def compose(self) -> Generator[ComposeResult, None, None]:
         yield Content()
@@ -83,12 +92,30 @@ class Panel(VerticalScroll):
             self.post_message(self.RevisionSelected(revision, panel_type=self.TYPE))
 
         await self.app.push_screen(
-            modals.SelectRevisionModal(self.current_revision or "", self.revisions),
+            modals.RadioButtonsModal(
+                "Select a revision to view",
+                current=self.current_revision or "",
+                options=self.revisions,
+            ),
             fire_revision_event,
         )
 
     async def action_sync_panels(self) -> None:
         self.post_message(self.SyncPanelsRequest(self.TYPE))
+
+    async def action_select_diff_type(self) -> None:
+        def fire_diff_type_event(diff_type: str) -> None:
+            self.current_diff_type = diff_type
+            self.post_message(self.DIffTypeSelected(DiffType(diff_type), panel_type=self.TYPE))
+
+        await self.app.push_screen(
+            modals.RadioButtonsModal(
+                "Select a differ",
+                current=self.current_diff_type or "",
+                options=self.diff_types,
+            ),
+            fire_diff_type_event,
+        )
 
 
 TEXT_PANEL_BINDINGS: list[Binding | tuple[str, str] | tuple[str, str, str]] = [
@@ -104,6 +131,9 @@ class LeftPanel(Panel):
 
 class MiddlePanel(Panel):
     TYPE = PanelType.MIDDLE
+    BINDINGS = [
+        Binding("d,в", "select_diff_type", "Diff Type", show=True),
+    ]
 
 
 class RightPanel(Panel):
