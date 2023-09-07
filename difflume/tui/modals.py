@@ -105,18 +105,19 @@ class OpenFileModal(Modal):
             self.dismiss(selected_modal.__name__)
 
 
-class SelectRevisionModal(Modal):
-    def __init__(self, current_revision: str, revisions: list[str]) -> None:
+class RadioButtonsModal(Modal):
+    def __init__(self, label: str, *, current: str, options: list[str]) -> None:
         super().__init__()
-        self.current_revision = current_revision
-        self.revisions = revisions
+        self.label = label
+        self.current = current
+        self.options = options
 
     def compose(self) -> Generator[ComposeResult, None, None]:
-        with ScrollableContainer(id="select-revision-dialog"):
-            yield Label("Select a revision to view", id="select-revision-dialog-label")
+        with ScrollableContainer(id="radio-buttons-dialog"):
+            yield Label(self.label, id="radio-buttons-dialog-label")
             with RadioSet():
-                for revision in self.revisions:
-                    yield RadioButton(revision, value=self.current_revision == revision)
+                for option in self.options:
+                    yield RadioButton(option, value=self.current == option)
         yield Footer()
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

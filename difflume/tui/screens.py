@@ -212,10 +212,10 @@ class DiffScreen(Screen):
         diff_result = create_diff(
             self.left_module.get_content(left_panel.current_revision).text,
             self.right_module.get_content(right_panel.current_revision).text,
-            DiffType.NDIFF,
+            DiffType(middle_panel.current_diff_type),
         )
         diff_highlighted = Text(diff_result.text)
-        for highlight_type, regexp in diff_result.highlight_regexp.items():
+        for highlight_type, regexp in diff_result.highlight_regexps:
             diff_highlighted.highlight_regex(
                 regexp, Style(bgcolor=DIFF_COLORS[highlight_type])
             )
@@ -262,6 +262,12 @@ class DiffScreen(Screen):
         to_panel.revisions = from_panel.revisions
         to_panel.current_revision = from_panel.current_revision
         self.apply_module_to_panel(module, to_panel)
+        self.update_diff_panel()
+
+    def on_panel_diff_type_selected(
+        self,
+        event: Panel.DIffTypeSelected,  # noqa: U100
+    ) -> None:
         self.update_diff_panel()
 
     def on_mount(self) -> None:

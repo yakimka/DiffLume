@@ -2,6 +2,11 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 0.4.0
+
+- Add ability to select a diff type
+- Add Ndiff Collapsed diff type
+
 ## Version 0.3.0
 
 - Hotkeys supports Cyrillic layout
