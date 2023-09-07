@@ -1,6 +1,7 @@
 # mypy: disable-error-code="override, misc"
 from __future__ import annotations
 
+import contextlib
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Literal
@@ -145,6 +146,8 @@ class DiffScreen(Screen):
             return
         for i, p in zip(indexes, panel):
             self.set_revision(p.revisions[i + 1], panel=p)
+            if i + 2 < len(p.revisions):
+                self.preload_revision(p.revisions[i + 2], panel=p)
 
     def next_revision(self, *panel: Panel) -> None:
         try:
@@ -155,6 +158,8 @@ class DiffScreen(Screen):
             return
         for i, p in zip(indexes, panel):
             self.set_revision(p.revisions[i - 1], panel=p)
+            if i - 2 >= 0:
+                self.preload_revision(p.revisions[i - 2], panel=p)
 
     @work
     async def load_panel(self, module: Module, *, panel_type: PanelType) -> None:
@@ -174,6 +179,9 @@ class DiffScreen(Screen):
 
         self.apply_module_to_panel(module, panel)
         self.update_diff_panel()
+
+        if len(panel.revisions) > 1:
+            self.preload_revision(panel.revisions[1], panel=panel)
 
     def show_error(self, message: str) -> None:
         self.notify(message, title="ERROR", severity="error", timeout=10)
@@ -242,6 +250,16 @@ class DiffScreen(Screen):
 
         self.apply_module_to_panel(module, panel)
         self.update_diff_panel()
+
+    @work
+    async def preload_revision(self, revision: str, *, panel: Panel) -> None:
+        module = self.modules[panel.TYPE]
+        assert module, "Unexpected empty module"
+
+        # if we can't load revision, just ignore it
+        # it is not critical for user
+        with contextlib.suppress(ReadError):
+            await module.load_revision(revision)
 
     async def on_panel_sync_panels_request(
         self, event: Panel.SyncPanelsRequest

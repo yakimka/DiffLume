@@ -2,6 +2,10 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 0.5.0
+
+- Preload revisions
+
 ## Version 0.4.0
 
 - Add ability to select a diff type
