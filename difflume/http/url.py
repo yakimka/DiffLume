@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import ParseResult
+from urllib.parse import quote as url_quote
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -30,11 +32,14 @@ def parse(url: str) -> URLParts:
     )
 
 
-def build(parts: URLParts) -> str:
+def build(parts: URLParts, *, quote: bool = False) -> str:
+    path = parts.path
+    if quote:
+        path = url_quote(path, safe="/%+")
     return ParseResult(
         scheme=parts.scheme,
         netloc=parts.netloc,
-        path=parts.path,
+        path=path,
         params=parts.params,
         query=parts.query,
         fragment=parts.fragment,

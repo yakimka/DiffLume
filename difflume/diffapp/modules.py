@@ -181,7 +181,7 @@ class CouchDBModule(Module):
             parts.path = parts.fragment.removeprefix("/").removeprefix("database/")
             parts.fragment = ""
 
-        self._url = url.build(parts)
+        self._url = url.build(parts, quote=True)
 
     async def _read_text(self) -> str:
         try:
@@ -192,10 +192,8 @@ class CouchDBModule(Module):
             raise ReadError(f"Could not read URL {self._url}") from e
 
     async def read_revisions(self) -> list[str]:
-        parts = url.parse(self._url)
-        parts.add_query("revs_info", "true")
         try:
-            res = await self._client.get(url.build(parts))
+            res = await self._client.get(self._url, params={"revs_info": "true"})
             res.raise_for_status()
             revs_info = res.json().get("_revs_info", [])
         except (HTTPError, JSONDecodeError) as e:
@@ -205,10 +203,8 @@ class CouchDBModule(Module):
     async def load_revision(self, revision: str) -> None:
         if revision in self.revisions_content:
             return None
-        parts = url.parse(self._url)
-        parts.add_query("rev", revision)
         try:
-            res = await self._client.get(url.build(parts))
+            res = await self._client.get(self._url, params={"rev": revision})
             res.raise_for_status()
         except HTTPError as e:
             raise ReadError(f"Could not read revision {revision}") from e
