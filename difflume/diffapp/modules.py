@@ -163,8 +163,14 @@ class CouchDBModule(Module):
         ---
         From: `http://localhost:5984/_utils/#database/collection/my_id`
         To: `http://localhost:5984/collection/my_id`
+        ---
+        From: `http://localhost:5984/_utils/#/database/collection/my_id`
+        To: `http://localhost:5984/collection/my_id`
         """
         parts = url.parse(self._url)
+        if not parts.path.startswith("/_utils/"):
+            return None
+
         # ver 1.x (Futon)
         if parts.path.startswith("/_utils/document.html"):
             path, *rev = parts.query.split("@")
@@ -172,8 +178,8 @@ class CouchDBModule(Module):
             parts.query = f"rev={rev[0]}" if rev else ""
             self._url = url.build(parts)
         # ver 2.x-3.x (Fauxton)
-        elif parts.path == "/_utils/" and parts.fragment.startswith("database/"):
-            parts.path = parts.fragment.removeprefix("database/")
+        elif parts.fragment.removeprefix("/").startswith("database/"):
+            parts.path = parts.fragment.removeprefix("/").removeprefix("database/")
             parts.fragment = ""
             self._url = url.build(parts)
 
