@@ -106,7 +106,9 @@ class Panel(VerticalScroll):
     async def action_select_diff_type(self) -> None:
         def fire_diff_type_event(diff_type: str) -> None:
             self.current_diff_type = diff_type
-            self.post_message(self.DIffTypeSelected(DiffType(diff_type), panel_type=self.TYPE))
+            self.post_message(
+                self.DIffTypeSelected(DiffType(diff_type), panel_type=self.TYPE)
+            )
 
         await self.app.push_screen(
             modals.RadioButtonsModal(

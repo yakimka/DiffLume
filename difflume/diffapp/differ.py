@@ -30,22 +30,27 @@ class Ndiff:
     def _format_lines(self, lines: Iterable[str]) -> str:
         return "\n".join(line.rstrip() for line in lines)
 
-    def highlight_regexp(self) -> dict[HighlightType, str]:
-        return {
-            HighlightType.ADDED: r"(^|\n)\+.*",
-            HighlightType.REMOVED: r"(^|\n)-.*",
-            HighlightType.EXPLANATION: r"(^|\n)\?.*",
-        }
+    def highlight_regexps(self) -> list[tuple[HighlightType, str]]:
+        return [
+            (HighlightType.ADDED, r"(^|\n)\+.*"),
+            (HighlightType.REMOVED, r"(^|\n)-.*"),
+            (HighlightType.EXPLANATION, r"(^|\n)\?.*"),
+        ]
 
 
 class NdiffCollapsed(Ndiff):
-    def __init__(self, preserve_rows: int = 2, delimiter: str = "[...]") -> None:
+    def __init__(self, preserve_rows: int = 2) -> None:
         self.preserve_rows = preserve_rows
-        self.delimiter = delimiter
+        self.delimiter = "[...]"
 
     def __call__(self, text: str, text_to_compare: str) -> str:
         diff = self._make_diff(text, text_to_compare)
         return self._format_lines(self.collapse(diff))
+
+    def highlight_regexps(self) -> list[tuple[HighlightType, str]]:
+        regexps = super().highlight_regexps()
+        regexps.append((HighlightType.EXPLANATION, r"(^|\n)\[.*"))
+        return regexps
 
     def collapse(self, lines: Iterable[str]) -> Generator[str, None, None]:
         lines_mapping, last_line_num = self._meaningful_lines(lines)
@@ -96,12 +101,12 @@ diff_func_mapping = {
 @dataclass(kw_only=True)
 class DiffResult:
     text: str
-    highlight_regexp: dict[HighlightType, str]
+    highlight_regexps: dict[HighlightType, list[str]]
 
 
 def create_diff(text: str, text_to_compare: str, diff_type: DiffType) -> DiffResult:
     differ = diff_func_mapping[diff_type]
     return DiffResult(
         text=differ(text, text_to_compare),
-        highlight_regexp=differ.highlight_regexp(),
+        highlight_regexps=differ.highlight_regexps(),
     )

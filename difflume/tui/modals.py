@@ -104,6 +104,7 @@ class OpenFileModal(Modal):
             selected_modal = self.CHILD_MODALS[int(event.key) - 1]
             self.dismiss(selected_modal.__name__)
 
+
 class RadioButtonsModal(Modal):
     def __init__(self, label: str, *, current: str, options: list[str]) -> None:
         super().__init__()

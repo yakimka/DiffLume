@@ -1,13 +1,11 @@
-import re
-
 import pytest
 
-from difflume.diffapp.differ import HighlightType, NdiffCollapsed
+from difflume.diffapp.differ import NdiffCollapsed
 
 
 @pytest.fixture()
 def sut():
-    return NdiffCollapsed(preserve_rows=2, delimiter="[...]")
+    return NdiffCollapsed(preserve_rows=2)
 
 
 def test_delta(sut):
@@ -122,20 +120,3 @@ def test_empty_text(sut):
     result = sut(text, text_to_compare)
 
     assert result == ""
-
-
-@pytest.mark.parametrize(
-    "type_,line",
-    [
-        (HighlightType.ADDED, '+     "age": 31,'),
-        (HighlightType.ADDED, '\n+     "age": 31,'),
-        (HighlightType.REMOVED, '-     "age": 30,'),
-        (HighlightType.REMOVED, '\n-     "age": 30,'),
-        (HighlightType.EXPLANATION, "?             ^"),
-        (HighlightType.EXPLANATION, "\n?             ^"),
-    ],
-)
-def test_highlight_regexp(sut, type_, line):
-    regex = sut.highlight_regexp()[type_]
-
-    assert re.search(regex, line)

@@ -28,7 +28,9 @@ def test_open_file_in_right_panel(snap_compare):
 def test_make_diff_of_couchdb_revisions(snap_compare, couchdb_server, document_url):
     assert snap_compare(
         press=[
-            "f1", "3", *list(couchdb_server.url_for(document_url)),  # type URL
+            "f1",
+            "3",
+            *list(couchdb_server.url_for(document_url)),  # type URL
             "enter",  # open URL
             "s",  # sync panels (open same revision in the right panel)
             "[",  # prev revision
@@ -44,8 +46,15 @@ def test_select_diff_type_dialog(snap_compare):
 def test_compare_files_with_default_diff_type(snap_compare):
     assert snap_compare(
         press=[
-            "f1", "2", "down", "enter",  # open file in the left panel
-            "f2", "2", "down", "down", "enter",  # open file in the right panel
+            "f1",
+            "2",
+            "down",
+            "enter",  # open file in the left panel
+            "f2",
+            "2",
+            "down",
+            "down",
+            "enter",  # open file in the right panel
         ]
     )
 
@@ -53,8 +62,18 @@ def test_compare_files_with_default_diff_type(snap_compare):
 def test_compare_files_and_change_diff_type(snap_compare):
     assert snap_compare(
         press=[
-            "f1", "2", "down", "enter",  # open file in the left panel
-            "f2", "2", "down", "down", "enter",  # open file in the right panel
-            "tab", "d", "down", "enter",  # select ndiff
+            "f1",
+            "2",
+            "down",
+            "enter",  # open file in the left panel
+            "f2",
+            "2",
+            "down",
+            "down",
+            "enter",  # open file in the right panel
+            "tab",
+            "d",
+            "down",
+            "enter",  # select ndiff
         ]
     )
