@@ -176,12 +176,12 @@ class CouchDBModule(Module):
             path, *rev = parts.query.split("@")
             parts.path = path
             parts.query = f"rev={rev[0]}" if rev else ""
-            self._url = url.build(parts)
         # ver 2.x-3.x (Fauxton)
         elif parts.fragment.removeprefix("/").startswith("database/"):
             parts.path = parts.fragment.removeprefix("/").removeprefix("database/")
             parts.fragment = ""
-            self._url = url.build(parts)
+
+        self._url = url.build(parts)
 
     async def _read_text(self) -> str:
         try:
@@ -193,7 +193,7 @@ class CouchDBModule(Module):
 
     async def read_revisions(self) -> list[str]:
         parts = url.parse(self._url)
-        parts.query = "&".join([p for p in (parts.query, "revs_info=true") if p])
+        parts.add_query("revs_info", "true")
         try:
             res = await self._client.get(url.build(parts))
             res.raise_for_status()
@@ -206,8 +206,7 @@ class CouchDBModule(Module):
         if revision in self.revisions_content:
             return None
         parts = url.parse(self._url)
-        parts.query = "&".join([p for p in (parts.query, f"rev={revision}") if p])
-
+        parts.add_query("rev", revision)
         try:
             res = await self._client.get(url.build(parts))
             res.raise_for_status()

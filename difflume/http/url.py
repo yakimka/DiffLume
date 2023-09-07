@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from urllib.parse import ParseResult, urlparse
 
@@ -10,6 +12,10 @@ class URLParts:
     params: str
     query: str
     fragment: str
+
+    def add_query(self, key: str, value: str) -> URLParts:
+        self.query = "&".join([p for p in (self.query, f"{key}={value}") if p])
+        return self
 
 
 def parse(url: str) -> URLParts:
