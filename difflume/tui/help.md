@@ -17,4 +17,5 @@ DiffLume is a tool for visualizing the differences between two files.
 | }      | Next revision synchronous in left and right panels (if both has)     |
 | f      | Make current panel full screen (toggle)                              |
 | c      | Center text in panels (toggle)                                       |
+| d      | Change diff type (only in middle panel)                              |
 | Ctrl^C | Quit                                                                 |
