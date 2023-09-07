@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bullseye as builder
 
-ARG WHEEL=difflume-0.3.1-py3-none-any.whl
+ARG WHEEL=difflume-0.4.0-py3-none-any.whl
 ENV VENV=/venv
 ENV PATH="$VENV/bin:$PATH"
 

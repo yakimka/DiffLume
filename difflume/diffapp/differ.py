@@ -101,7 +101,7 @@ diff_func_mapping = {
 @dataclass(kw_only=True)
 class DiffResult:
     text: str
-    highlight_regexps: dict[HighlightType, list[str]]
+    highlight_regexps: list[tuple[HighlightType, str]]
 
 
 def create_diff(text: str, text_to_compare: str, diff_type: DiffType) -> DiffResult:
