@@ -2,6 +2,10 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 0.5.1
+
+- Update help
+
 ## Version 0.5.0
 
 - Preload revisions
