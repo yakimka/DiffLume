@@ -2,6 +2,12 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 0.6.0
+
+- Fix rewriting Fauxton urls
+- Quote rewrited URLs
+- Update readmes
+
 ## Version 0.5.1
 
 - Update help
