@@ -15,7 +15,7 @@ TUI app for viewing deltas between text files
 - Supported python versions: 3.10+
 - Supported OS: Linux, MacOS, Windows (best works with new Windows Terminal)
 - Can view revisions of files (currently only CouchDB is supported)
-- Navigate between revisions with ][ and }{ keys
+- Navigate between revisions with `]` `[` and `}` `{` keys
 - Sync content between panels
 - Full screen mode
 - Different diff view modes
