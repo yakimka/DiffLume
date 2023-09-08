@@ -12,17 +12,20 @@ TUI app for viewing deltas between text files
 ## Features
 
 - Three-panel TUI for viewing deltas between text files
+- Supported python versions: 3.10+
+- Supported OS: Linux, MacOS, Windows (best works with new Windows Terminal)
 - Can view revisions of files (currently only CouchDB is supported)
 - Navigate between revisions with ][ and }{ keys
 - Sync content between panels
 - Full screen mode
+- Different diff view modes
 
 ## Usage
 
 Install via pip:
 
 ```bash
-pip install --user DiffLume
+python3 -m pip install --user DiffLume
 ```
 
 Then type in your terminal:
@@ -30,7 +33,7 @@ Then type in your terminal:
 ```bash
 difflume
 # or
-python -m difflume
+python3 -m difflume
 ```
 
 Or you can run it in Docker:
