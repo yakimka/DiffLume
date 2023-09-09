@@ -3,9 +3,9 @@
 Ever wanted to spot the differences between text files in a jiffy? DiffLume's got your back!
 
 [![Build Status](https://github.com/yakimka/DiffLume/actions/workflows/workflow-ci.yml/badge.svg?branch=main&event=push)](https://github.com/yakimka/DiffLume/actions/workflows/workflow-ci.yml)
-[![codecov](https://codecov.io/gh/yakimka/DiffLume/branch/main/graph/badge.svg)](https://codecov.io/gh/yakimka/DiffLume)
-[![pypi](https://img.shields.io/pypi/v/DiffLume.svg)](https://pypi.org/project/DiffLume/)
-[![downloads](https://static.pepy.tech/personalized-badge/DiffLume?period=total&units=none&left_color=grey&right_color=blue&left_text=downloads)](https://pepy.tech/project/DiffLume)
+[![Codecov](https://codecov.io/gh/yakimka/DiffLume/branch/main/graph/badge.svg)](https://codecov.io/gh/yakimka/DiffLume)
+[![PyPI - Version](https://img.shields.io/pypi/v/DiffLume.svg)](https://pypi.org/project/DiffLume/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/DiffLume)
 
 ![sneak peek](https://raw.githubusercontent.com/yakimka/DiffLume/main/assets/screenshot.png)
 
