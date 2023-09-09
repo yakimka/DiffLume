@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "DiffLume"
 description = "TUI app for viewing deltas between text files"
-version = "0.5.1"
+version = "0.6.0"
 license = "MIT"
 
 authors = [
@@ -16,13 +16,20 @@ readme = "README.md"
 
 repository = "https://github.com/yakimka/DiffLume"
 
-keywords = []
+keywords = [
+  "diff",
+  "tui",
+  "text",
+  "textual",
+  "terminal",
+]
 
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
   "Operating System :: OS Independent",
-  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Utilities",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
 ]
@@ -35,17 +42,15 @@ python = "^3.10"
 textual = ">=0.35.1,<0.37.0"
 httpx = "^0.24.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mypy = "^1.5"
 pre-commit = "^3.4.0"
 pytest = "^7.4"
 pytest-asyncio = "^0.21.1"
 pytest-cov = "^4.1.0"
 pytest-deadfixtures = "^2.2.1"
-pytest-randomly = "^3.12"
-
-[tool.poetry.group.dev.dependencies]
 pytest-httpserver = "^1.0.8"
+pytest-randomly = "^3.12"
 pytest-textual-snapshot = "^0.4.0"
 
 [tool.isort]

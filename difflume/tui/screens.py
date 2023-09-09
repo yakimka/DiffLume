@@ -51,7 +51,9 @@ DIFF_COLORS = {
 class DiffScreen(Screen):
     CSS_PATH = os.path.join("css", "main.tcss")
     BINDINGS = [
-        Binding("question_mark", "push_screen('help')", "Help", key_display="?"),
+        Binding(
+            "question_mark,comma,&,.,/", "push_screen('help')", "Help", key_display="?"
+        ),
         Binding("f1", "select_file('left')", "Open Left", show=True),
         Binding("f2", "select_file('right')", "Open Right", show=True),
         Binding("[,х", "prev_revision", "Prev Revision", show=False),

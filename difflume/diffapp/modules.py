@@ -163,19 +163,25 @@ class CouchDBModule(Module):
         ---
         From: `http://localhost:5984/_utils/#database/collection/my_id`
         To: `http://localhost:5984/collection/my_id`
+        ---
+        From: `http://localhost:5984/_utils/#/database/collection/my_id`
+        To: `http://localhost:5984/collection/my_id`
         """
         parts = url.parse(self._url)
+        if not parts.path.startswith("/_utils/"):
+            return None
+
         # ver 1.x (Futon)
         if parts.path.startswith("/_utils/document.html"):
             path, *rev = parts.query.split("@")
             parts.path = path
             parts.query = f"rev={rev[0]}" if rev else ""
-            self._url = url.build(parts)
         # ver 2.x-3.x (Fauxton)
-        elif parts.path == "/_utils/" and parts.fragment.startswith("database/"):
-            parts.path = parts.fragment.removeprefix("database/")
+        elif parts.fragment.removeprefix("/").startswith("database/"):
+            parts.path = parts.fragment.removeprefix("/").removeprefix("database/")
             parts.fragment = ""
-            self._url = url.build(parts)
+
+        self._url = url.build(parts, quote=True)
 
     async def _read_text(self) -> str:
         try:
@@ -186,10 +192,8 @@ class CouchDBModule(Module):
             raise ReadError(f"Could not read URL {self._url}") from e
 
     async def read_revisions(self) -> list[str]:
-        parts = url.parse(self._url)
-        parts.query = "&".join([p for p in (parts.query, "revs_info=true") if p])
         try:
-            res = await self._client.get(url.build(parts))
+            res = await self._client.get(self._url, params={"revs_info": "true"})
             res.raise_for_status()
             revs_info = res.json().get("_revs_info", [])
         except (HTTPError, JSONDecodeError) as e:
@@ -199,11 +203,8 @@ class CouchDBModule(Module):
     async def load_revision(self, revision: str) -> None:
         if revision in self.revisions_content:
             return None
-        parts = url.parse(self._url)
-        parts.query = "&".join([p for p in (parts.query, f"rev={revision}") if p])
-
         try:
-            res = await self._client.get(url.build(parts))
+            res = await self._client.get(self._url, params={"rev": revision})
             res.raise_for_status()
         except HTTPError as e:
             raise ReadError(f"Could not read revision {revision}") from e

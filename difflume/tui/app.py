@@ -19,7 +19,7 @@ class Deps:
             http_client=AsyncClient(
                 follow_redirects=True,
                 verify=False,  # noqa: S501
-                timeout=15,
+                timeout=10,
             )
         )
 

@@ -164,12 +164,17 @@ async def test_rewrite_futon_url_with_revision(
     )
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "/_utils/#database/collection/my_id",
+        "/_utils/#/database/collection/my_id",
+    ],
+)
 async def test_rewrite_fauxton_url(
-    couchdb_module_maker, couchdb_server, response_data_text
+    url, couchdb_module_maker, couchdb_server, response_data_text
 ):
-    sut = couchdb_module_maker(
-        couchdb_server.url_for("/_utils/#database/collection/my_id")
-    )
+    sut = couchdb_module_maker(couchdb_server.url_for(url))
     await sut.load()
 
     result = sut.get_content()
