@@ -4,7 +4,7 @@ from __future__ import annotations
 import contextlib
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Generator, Literal
+from typing import TYPE_CHECKING, Literal
 
 from rich.highlighter import Highlighter, JSONHighlighter, ReprHighlighter
 from rich.style import Style
@@ -21,6 +21,8 @@ from difflume.tui import modals
 from difflume.tui.widgets import LeftPanel, MiddlePanel, Panel, PanelType, RightPanel
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from textual.app import ComposeResult
 
 

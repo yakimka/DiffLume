@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import difflib
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generator, Iterable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterable
 
 
 class DiffType(Enum):

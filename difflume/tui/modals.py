@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Center, ScrollableContainer
@@ -21,6 +21,8 @@ from textual.widgets import (
 from difflume.diffapp.modules import CouchDBModule, FSModule, URLModule
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from textual import events
     from textual.app import ComposeResult
 
