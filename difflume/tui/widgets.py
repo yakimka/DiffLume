@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import VerticalScroll
@@ -13,6 +13,8 @@ from difflume.diffapp.differ import DiffType
 from difflume.tui import modals
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from rich.console import RenderableType
     from textual.app import ComposeResult
 

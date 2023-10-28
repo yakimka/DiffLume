@@ -123,7 +123,7 @@ class FSModule(NoRevisionModuleMixin, Module):
 
     async def _read_text(self) -> str:
         try:
-            with open(self._path, "r") as f:
+            with open(self._path) as f:
                 return f.read()
         except (OSError, UnicodeDecodeError) as e:
             raise ReadError(f"Could not read file {self._path}") from e
