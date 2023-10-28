@@ -27,12 +27,10 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [
-          # "flake8-assertive~=2.1.0"
-          # "flake8-future-annotations~=1.1.0",
           "dlint~=0.14.1",
           "flake8-async~=22.11.14",
           "flake8-bandit~=4.1.1",
-          "flake8-bugbear~=23.7.10",
+          "flake8-bugbear~=23.9.16",
           "flake8-comprehensions~=3.14.0",
           "flake8-eradicate~=1.5.0",
           "flake8-mock==0.4",
@@ -40,10 +38,10 @@ repos:
           "flake8-pie~=0.16.0",
           "flake8-pytest-style~=1.7.2",
           "flake8-self~=0.2.2",
-          "flake8-simplify~=0.20.0",
-          "flake8-type-checking~=2.4.1",
-          "flake8-typing-imports~=1.14.0",
+          "flake8-simplify~=0.21.0",
+          "flake8-type-checking~=2.5.1",
+          "flake8-typing-imports~=1.15.0",
           "flake8-unused-arguments~=0.0.13",
-          "flake8-warnings~=0.4.0",
+          "flake8-warnings~=0.4.1",
           "pep8-naming~=0.13.3",
         ]
